@@ -19,7 +19,7 @@ import {
 import api from "../services/api";
 import heroImage from "../assets/EdTech-Platform.avif";
 import CTC from "../assets/CTC.png";
-import Nav from "./homeNav";
+import Nav from "./HomeNav";
 import { useTranslation } from "react-i18next";
 
 function Home() {
