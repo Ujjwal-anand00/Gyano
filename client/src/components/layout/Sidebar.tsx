@@ -1,4 +1,5 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
+
 import {
   LayoutDashboard,
   BookOpen,
@@ -7,7 +8,8 @@ import {
   ClipboardList,
   LogOut,
   Trophy,
-  Menu
+  Menu,
+  LucideIcon
 } from "lucide-react";
 
 import { useState } from "react";
@@ -27,7 +29,7 @@ function Sidebar() {
     navigate("/")
   }
 
-  const navItem = (path:string,label:string,Icon:any) => {
+  const navItem = (path:string,label:string,Icon:LucideIcon) => {
 
     const active = location.pathname === path
 
@@ -61,6 +63,7 @@ function Sidebar() {
         {open && (
           <img
             src={Logo}
+            alt="Gyano Logo"
             className="h-10 object-contain"
           />
         )}
