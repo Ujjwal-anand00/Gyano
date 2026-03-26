@@ -96,5 +96,16 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
 )
 `).run();
 
+// Ai Note Taking
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS ai_notes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  lesson_id INTEGER,
+  content TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+  `).run();
+
 
 console.log("Database initialized");

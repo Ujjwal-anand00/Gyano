@@ -15,6 +15,7 @@ import CourseDetails from "./pages/CourseDetails"
 import Analytics from "./pages/Analytics"
 import TeacherAnalytics from "./pages/TeacherAnalytics"
 import Leaderboard from "./pages/Leaderboard"
+import AINotes from "./pages/AINotes"
 
 function App() {
   return (
@@ -44,6 +45,8 @@ function App() {
         <Route path="/teacher-analytics" element={<TeacherAnalytics />} />
 
         <Route path="/leaderboard" element={<Leaderboard />} />
+
+        <Route path="/ai-notes" element={<AINotes />} />
 
       </Routes>
 

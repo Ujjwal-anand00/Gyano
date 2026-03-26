@@ -1,41 +1,29 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Search, LogOut, User } from "lucide-react";
+import { Bell, Search, LogOut, User, Menu } from "lucide-react";
 import api from "../../services/api";
+import Logo from "../../assets/Gyano.png";
 
-function Navbar() {
+function Topbar({ setOpen, setMobileOpen }: any) {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
-  const [open, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<any[]>([]);
 
   useEffect(() => {
-    const name = localStorage.getItem("username");
-    const userRole = localStorage.getItem("role");
-
-    if (name) {
-      setUsername(name);
-    }
-
-    if (userRole) {
-      setRole(userRole);
-    }
+    setUsername(localStorage.getItem("username") || "");
+    setRole(localStorage.getItem("role") || "");
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    localStorage.removeItem("username");
-
+    localStorage.clear();
     navigate("/login");
   };
 
   const handleSearch = async (value: string) => {
-
-     console.log("Searching:", value)
     setSearch(value);
 
     if (value.length < 2) {
@@ -44,16 +32,35 @@ function Navbar() {
     }
 
     const res = await api.get(`/api/courses/search?query=${value}`);
-     console.log("API response:", res.data)
-
     setCourses(res.data);
   };
 
   return (
-    <div className="h-16 bg-white/80 backdrop-blur border-b flex items-center justify-between px-8">
-      {/* SEARCH BAR */}
+    <div className="sticky top-0 z-30 bg-white border-b px-4 sm:px-6 py-3 flex items-center justify-between">
+      {/* LEFT SECTION */}
+      <div className="flex items-center gap-3">
+        {/* Mobile menu */}
+        <button onClick={() => setMobileOpen(true)} className="lg:hidden">
+          <Menu size={24} />
+        </button>
 
-      <div className="relative hidden md:flex items-center bg-gray-100 px-4 py-2 rounded-xl w-96">
+        {/* Desktop toggle */}
+        <button
+          onClick={() => setOpen((prev: boolean) => !prev)}
+          className="hidden lg:block"
+        >
+          <Menu size={22} />
+        </button>
+
+        <img
+          src={Logo}
+          alt="Gyano Logo"
+          className="h-8 hidden sm:block object-contain"
+        />
+      </div>
+
+      {/* SEARCH BAR */}
+      <div className="relative hidden md:flex items-center bg-gray-100 px-4 py-2 rounded-xl w-80 lg:w-96">
         <Search size={16} className="text-gray-400" />
 
         <input
@@ -61,8 +68,10 @@ function Navbar() {
           placeholder="Search courses..."
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
-          className="bg-transparent outline-none ml-3 text-sm w-full placeholder-gray-400"
+          className="bg-transparent outline-none ml-3 text-sm w-full"
         />
+
+        {/* SEARCH DROPDOWN */}
         {search && courses.length > 0 && (
           <div className="absolute top-12 left-0 w-full bg-white border rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
             {courses.map((course: any) => (
@@ -81,46 +90,36 @@ function Navbar() {
         )}
       </div>
 
-      {/* RIGHT SIDE */}
-
-      <div className="flex items-center gap-6">
-        {/* NOTIFICATIONS */}
-
-        <button className="relative hover:bg-gray-100 p-2 rounded-lg transition">
+      {/* RIGHT SECTION */}
+      <div className="flex items-center gap-4 sm:gap-6">
+        {/* Notifications */}
+        <button className="relative hover:bg-gray-100 p-2 rounded-lg">
           <Bell size={20} className="text-gray-600" />
-
           <span className="absolute -top-1 -right-1 text-xs bg-red-500 text-white rounded-full px-1.5">
             2
           </span>
         </button>
 
-        {/* USER PROFILE */}
-
+        {/* Profile */}
         <div className="relative">
           <button
-            onClick={() => setOpen(!open)}
-            className="flex items-center gap-3 hover:bg-gray-100 px-3 py-2 rounded-lg transition"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            className="flex items-center gap-2 sm:gap-3 hover:bg-gray-100 px-2 py-2 rounded-lg"
           >
-            {/* AVATAR */}
-
             <div className="w-9 h-9 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center font-semibold">
               {username ? username.charAt(0).toUpperCase() : "U"}
             </div>
 
-            {/* NAME */}
-
-            <div className="hidden md:flex flex-col text-left">
-              <span className="text-sm font-semibold text-gray-800">
+            <div className="hidden sm:flex flex-col text-left">
+              <span className="text-sm font-semibold">
                 {username || "User"}
               </span>
-
               <span className="text-xs text-gray-500 capitalize">{role}</span>
             </div>
           </button>
 
-          {/* DROPDOWN */}
-
-          {open && (
+          {/* Dropdown */}
+          {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-44 bg-white border rounded-xl shadow-lg overflow-hidden">
               <button className="flex items-center gap-2 px-4 py-2 w-full hover:bg-gray-100 text-sm">
                 <User size={16} />
@@ -142,4 +141,4 @@ function Navbar() {
   );
 }
 
-export default Navbar;
+export default Topbar;

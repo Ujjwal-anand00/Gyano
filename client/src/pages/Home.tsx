@@ -463,43 +463,41 @@ function Home() {
 
       {/* CTA Section */}
 
-      <section className="relative bg-white py-28 overflow-hidden">
-        {/* Soft background decoration */}
+      <section className="relative bg-white py-16 sm:py-20 lg:py-28 overflow-hidden">
+        {/* BACKGROUND DECORATION */}
+        <div className="absolute -top-32 -left-32 w-72 sm:w-96 h-72 sm:h-96 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
+        <div className="absolute bottom-0 right-0 w-72 sm:w-96 h-72 sm:h-96 bg-indigo-100 rounded-full blur-3xl opacity-40"></div>
 
-        <div className="absolute -top-32 -left-32 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-40"></div>
-
-        <div className="max-w-7xl mx-auto px-10 grid md:grid-cols-2 gap-16 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* LEFT CONTENT */}
-
-          <div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-800 leading-tight mb-6">
+          <div className="text-center md:text-left">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight mb-4 sm:mb-6">
               {t("CTA")}
             </h2>
 
-            <p className="text-gray-600 text-lg mb-8 max-w-lg">
+            <p className="text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 max-w-xl mx-auto md:mx-0">
               {t("CTA_desc")}
             </p>
 
             {/* QUOTE */}
-
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg mb-8">
-              <p className="italic text-gray-600">{t("CTA_desc2")}</p>
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4 rounded-lg mb-6 sm:mb-8">
+              <p className="italic text-gray-600 text-sm sm:text-base">
+                {t("CTA_desc2")}
+              </p>
             </div>
 
             {/* BUTTONS */}
-
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
               <button
                 onClick={() => navigate("/register")}
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md"
+                className="w-full sm:w-auto bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md"
               >
                 {t("CTA_btn")}
               </button>
 
               <button
                 onClick={() => navigate("/courses")}
-                className="border border-gray-300 px-8 py-3 rounded-lg hover:bg-gray-100 transition"
+                className="w-full sm:w-auto border border-gray-300 px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-100 transition"
               >
                 {t("CTA_btn2")}
               </button>
@@ -507,12 +505,11 @@ function Home() {
           </div>
 
           {/* RIGHT IMAGE */}
-
           <div className="flex justify-center">
-            <div className="bg-white p-6 rounded-2xl">
+            <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-2xl shadow-md">
               <motion.img
                 src={CTC}
-                className="rounded-xl max-w-lg"
+                className="rounded-xl w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg"
                 animate={{ y: [0, -20, 0] }}
                 transition={{ duration: 4, repeat: Infinity }}
               />

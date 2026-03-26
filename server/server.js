@@ -14,6 +14,8 @@ const enrollmentRoutes = require("./routes/enrollmentRoutes")
 const teacherAnalyticsRoutes = require("./routes/teacherAnalyticsRoutes")
 const leaderboardRoutes = require("./routes/leaderboardRoutes")
 const certificateRoutes = require("./routes/certificateRoutes")
+const aiRoutes = require("./routes/aiRoutes")
+const aiNoteRoutes = require("./routes/aiNoteRoutes");
 
 const app = express()
 
@@ -30,6 +32,8 @@ app.use("/api/enrollment", enrollmentRoutes)
 app.use("/api/teacher-analytics",teacherAnalyticsRoutes)
 app.use("/api/leaderboard",leaderboardRoutes)
 app.use("/api/certificate",certificateRoutes)
+app.use("/api/ai", aiRoutes)
+app.use("/api/ai-notes", aiNoteRoutes)
 
 app.get("/", (req, res) => {
   res.send("Digital Learning Platform API running")
