@@ -21,7 +21,7 @@ const AIAssistant: React.FC<Props> = ({ lesson }) => {
       setLoading(true);
       setAnswer("");
 
-      const res = await fetch("http://localhost:5000/api/ai/ask", {
+      const res = await fetch("https://gyano.onrender.com/api/ai/ask", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ const AIAssistant: React.FC<Props> = ({ lesson }) => {
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-      const res = await fetch("http://localhost:5000/api/ai-notes/save", {
+      const res = await fetch("https://gyano.onrender.com/api/ai-notes/save", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
