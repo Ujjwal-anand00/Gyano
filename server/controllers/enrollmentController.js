@@ -1,44 +1,61 @@
-const db = require("../database/db")
+const pool = require("../database/db");
 
 /* ENROLL STUDENT */
+exports.enrollCourse = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    const { course_id } = req.body;
 
-exports.enrollCourse = (req,res)=>{
+    // ✅ Check if already enrolled
+    const exists = await pool.query(
+      `
+      SELECT * FROM enrollments
+      WHERE student_id = $1 AND course_id = $2
+      `,
+      [studentId, course_id]
+    );
 
- const studentId = req.user.id
- const { course_id } = req.body
+    if (exists.rows.length > 0) {
+      return res.json({ message: "Already enrolled" });
+    }
 
- const exists = db.prepare(`
-  SELECT * FROM enrollments
-  WHERE student_id = ? AND course_id = ?
- `).get(studentId,course_id)
+    // ✅ Insert enrollment
+    await pool.query(
+      `
+      INSERT INTO enrollments (student_id, course_id)
+      VALUES ($1, $2)
+      `,
+      [studentId, course_id]
+    );
 
- if(exists){
-  return res.json({message:"Already enrolled"})
- }
+    res.json({ message: "Enrollment successful" });
 
- db.prepare(`
- INSERT INTO enrollments
- (student_id,course_id)
- VALUES (?,?)
- `).run(studentId,course_id)
-
- res.json({message:"Enrollment successful"})
-}
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
 
 /* GET STUDENT COURSES */
+exports.getMyCourses = async (req, res) => {
+  try {
+    const studentId = req.user.id;
 
-exports.getMyCourses = (req,res)=>{
+    const result = await pool.query(
+      `
+      SELECT courses.*
+      FROM enrollments
+      JOIN courses ON enrollments.course_id = courses.id
+      WHERE enrollments.student_id = $1
+      `,
+      [studentId]
+    );
 
- const studentId = req.user.id
+    res.json(result.rows);
 
- const courses = db.prepare(`
- SELECT courses.*
- FROM enrollments
- JOIN courses ON enrollments.course_id = courses.id
- WHERE enrollments.student_id = ?
- `).all(studentId)
-
- res.json(courses)
-
-}
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server error" });
+  }
+};

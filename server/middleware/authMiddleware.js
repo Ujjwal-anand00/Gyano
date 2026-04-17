@@ -1,24 +1,38 @@
 const jwt = require("jsonwebtoken");
 
-const SECRET = "supersecretkey";
-
 const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    return res.status(401).json({ error: "Token missing" });
-  }
-
-  const token = authHeader.split(" ")[1];
-
   try {
-    const decoded = jwt.verify(token, SECRET);
+    const authHeader = req.headers.authorization;
 
+    // ✅ Check header exists
+    if (!authHeader) {
+      return res.status(401).json({ error: "Authorization header missing" });
+    }
+
+    // ✅ Check Bearer format
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Invalid token format" });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    // ✅ Verify token using ENV
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // ✅ Attach user to request
     req.user = decoded;
 
     next();
+
   } catch (error) {
-    res.status(401).json({ error: "Invalid token" });
+    console.error("Auth Error:", error.message);
+
+    // ✅ Handle expired token separately
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ error: "Token expired" });
+    }
+
+    return res.status(401).json({ error: "Invalid token" });
   }
 };
 

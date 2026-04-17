@@ -1,111 +1,102 @@
-const db = require("./db");
+const pool = require("./db");
 
-// USERS
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS users (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- name TEXT NOT NULL,
- email TEXT UNIQUE NOT NULL,
- password TEXT NOT NULL,
- role TEXT DEFAULT 'student',
- created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)
-`,
-).run();
+const initDB = async () => {
+  try {
+    await pool.query(`
 
-// COURSES
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS courses (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- title TEXT NOT NULL,
- description TEXT,
- thumbnail TEXT,
- instructor_id INTEGER,
- created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)
-`,
-).run();
+    -- USERS
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      role TEXT DEFAULT 'student',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-// LESSONS
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS lessons (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- course_id INTEGER,
- title TEXT NOT NULL,
- subject TEXT,
- content TEXT,
- language TEXT,
- video_url TEXT,
- thumbnail TEXT,
- position INTEGER
-)
-`,
-).run();
+    -- COURSES
+    CREATE TABLE IF NOT EXISTS courses (
+      id SERIAL PRIMARY KEY,
+      title TEXT NOT NULL,
+      description TEXT,
+      thumbnail TEXT,
+      instructor_id INTEGER,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-// QUIZ QUESTIONS
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS quizzes (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- lesson_id INTEGER,
- question TEXT NOT NULL,
- option1 TEXT,
- option2 TEXT,
- option3 TEXT,
- option4 TEXT,
- answer TEXT
-)
-`,
-).run();
+    -- LESSONS
+    CREATE TABLE IF NOT EXISTS lessons (
+      id SERIAL PRIMARY KEY,
+      course_id INTEGER,
+      title TEXT NOT NULL,
+      subject TEXT,
+      content TEXT,
+      language TEXT,
+      video_url TEXT,
+      thumbnail TEXT,
+      position INTEGER,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-// STUDENT PROGRESS
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS progress (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- student_id INTEGER,
- lesson_id INTEGER,
- course_id INTEGER,
- completed INTEGER DEFAULT 0,
- completed_at DATETIME
-)
-`,
-).run();
+    -- QUIZZES
+    CREATE TABLE IF NOT EXISTS quizzes (
+      id SERIAL PRIMARY KEY,
+      lesson_id INTEGER,
+      question TEXT NOT NULL,
+      option1 TEXT,
+      option2 TEXT,
+      option3 TEXT,
+      option4 TEXT,
+      answer TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-// COURSE ENROLLMENTS
-db.prepare(
-  `
-CREATE TABLE IF NOT EXISTS enrollments (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- student_id INTEGER,
- course_id INTEGER,
- enrolled_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)
-`,
-).run();
+    -- PROGRESS
+    CREATE TABLE IF NOT EXISTS progress (
+      id SERIAL PRIMARY KEY,
+      student_id INTEGER,
+      lesson_id INTEGER,
+      course_id INTEGER,
+      score INTEGER,
+      completed BOOLEAN DEFAULT false,
+      completed_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-db.prepare(`
-CREATE TABLE IF NOT EXISTS quiz_attempts (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- user_id INTEGER,
- lesson_id INTEGER,
- score INTEGER
-)
-`).run();
+    -- ENROLLMENTS
+    CREATE TABLE IF NOT EXISTS enrollments (
+      id SERIAL PRIMARY KEY,
+      student_id INTEGER,
+      course_id INTEGER,
+      enrolled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE (student_id, course_id)
+    );
 
-// Ai Note Taking
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS ai_notes (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER,
-  lesson_id INTEGER,
-  content TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-)
-  `).run();
+    -- QUIZ ATTEMPTS
+    CREATE TABLE IF NOT EXISTS quiz_attempts (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER,
+      lesson_id INTEGER,
+      score INTEGER,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
+    -- AI NOTES
+    CREATE TABLE IF NOT EXISTS ai_notes (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER,
+      lesson_id INTEGER,
+      content TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
 
-console.log("Database initialized");
+    `);
+
+    console.log("✅ PostgreSQL tables created successfully");
+
+  } catch (err) {
+    console.error("❌ DB Init Error:", err);
+  }
+};
+
+module.exports = initDB;

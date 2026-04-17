@@ -1,53 +1,56 @@
-const db = require("../database/db")
+const pool = require("../database/db");
 
-exports.getTeacherAnalytics = (req,res)=>{
+exports.getTeacherAnalytics = async (req, res) => {
+  try {
 
-  try{
+    // ✅ Total Courses
+    const totalCoursesResult = await pool.query(
+      `SELECT COUNT(*) as total FROM courses`
+    );
 
-    const totalCourses = db.prepare(`
-      SELECT COUNT(*) as total
-      FROM courses
-    `).get()
+    // ✅ Total Lessons
+    const totalLessonsResult = await pool.query(
+      `SELECT COUNT(*) as total FROM lessons`
+    );
 
-    const totalLessons = db.prepare(`
-      SELECT COUNT(*) as total
-      FROM lessons
-    `).get()
+    // ✅ Total Students (unique)
+    const totalStudentsResult = await pool.query(
+      `SELECT COUNT(DISTINCT student_id) as total FROM enrollments`
+    );
 
-    const totalStudents = db.prepare(`
-      SELECT COUNT(DISTINCT student_id) as total
-      FROM enrollments
-    `).get()
-
-    const completedLessons = db.prepare(`
+    // ✅ Completed Lessons
+    const completedLessonsResult = await pool.query(
+      `
       SELECT COUNT(*) as total
       FROM progress
-      WHERE completed = 1
-    `).get()
+      WHERE completed = true
+      `
+    );
 
-    const coursePerformance = db.prepare(`
+    // ✅ Course Performance
+    const coursePerformanceResult = await pool.query(
+      `
       SELECT 
         c.title,
-        COUNT(e.id) as students,
-        COUNT(l.id) as lessons
+        COUNT(DISTINCT e.id) as students,
+        COUNT(DISTINCT l.id) as lessons
       FROM courses c
       LEFT JOIN enrollments e ON e.course_id = c.id
       LEFT JOIN lessons l ON l.course_id = c.id
       GROUP BY c.id
-    `).all()
+      `
+    );
 
     res.json({
-      totalCourses: totalCourses.total,
-      totalLessons: totalLessons.total,
-      totalStudents: totalStudents.total,
-      completedLessons: completedLessons.total,
-      coursePerformance
-    })
+      totalCourses: parseInt(totalCoursesResult.rows[0].total),
+      totalLessons: parseInt(totalLessonsResult.rows[0].total),
+      totalStudents: parseInt(totalStudentsResult.rows[0].total),
+      completedLessons: parseInt(completedLessonsResult.rows[0].total),
+      coursePerformance: coursePerformanceResult.rows,
+    });
 
-  }catch(err){
-
-    res.status(500).json({error:err.message})
-
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
-
-}
+};

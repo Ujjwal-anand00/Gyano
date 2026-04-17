@@ -1,102 +1,207 @@
-const db = require("../database/db")
+const pool = require("../database/db");
 
-exports.createCourse = (req, res) => {
+/* 🔧 Helper: Validate ID */
+const validateId = (id) => {
+  const parsed = parseInt(id);
+  return isNaN(parsed) ? null : parsed;
+};
 
-  const { title, description, thumbnail } = req.body
 
-  if (!title) {
-    return res.status(400).json({ error: "Title required" })
+/* ✅ Create Course */
+exports.createCourse = async (req, res) => {
+  try {
+    const { title, description, thumbnail } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ error: "Title required" });
+    }
+
+    const result = await pool.query(
+      `
+      INSERT INTO courses (title, description, thumbnail)
+      VALUES ($1, $2, $3)
+      RETURNING *
+      `,
+      [title, description || null, thumbnail || null]
+    );
+
+    res.json({
+      message: "Course created successfully",
+      course: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error("Create Course Error:", error);
+    res.status(500).json({ error: "Server error" });
   }
+};
 
-  db.prepare(`
-    INSERT INTO courses
-    (title, description, thumbnail)
-    VALUES (?, ?, ?)
-  `).run(title, description, thumbnail)
 
-  res.json({
-    message: "Course created successfully"
-  })
+/* ✅ Get All Courses (with pagination) */
+exports.getCourses = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
 
-}
+    const result = await pool.query(
+      `
+      SELECT * FROM courses
+      ORDER BY created_at DESC
+      LIMIT $1 OFFSET $2
+      `,
+      [limit, offset]
+    );
 
-exports.getCourses = (req,res)=>{
+    res.json(result.rows);
 
- const courses = db.prepare(`
- SELECT * FROM courses
- `).all()
+  } catch (error) {
+    console.error("Get Courses Error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
- res.json(courses)
 
-}
-exports.deleteCourse = (req,res)=>{
+/* ✅ Delete Course */
+exports.deleteCourse = async (req, res) => {
+  try {
+    const id = validateId(req.params.id);
 
- const id = req.params.id
+    if (!id) {
+      return res.status(400).json({ error: "Invalid course ID" });
+    }
 
- db.prepare(`
- DELETE FROM courses
- WHERE id = ?
- `).run(id)
+    const result = await pool.query(
+      `
+      DELETE FROM courses
+      WHERE id = $1
+      RETURNING *
+      `,
+      [id]
+    );
 
- res.json({
-  message:"Course deleted"
- })
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Course not found" });
+    }
 
-}
+    res.json({ message: "Course deleted" });
 
-exports.updateCourse = (req,res)=>{
+  } catch (error) {
+    console.error("Delete Course Error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
- const id = req.params.id
- const { title, description, thumbnail } = req.body
 
- db.prepare(`
- UPDATE courses
- SET title = ?, description = ?, thumbnail = ?
- WHERE id = ?
- `).run(title,description,thumbnail,id)
+/* ✅ Update Course */
+exports.updateCourse = async (req, res) => {
+  try {
+    const id = validateId(req.params.id);
 
- res.json({
-  message:"Course updated"
- })
+    if (!id) {
+      return res.status(400).json({ error: "Invalid course ID" });
+    }
 
-}
+    const { title, description, thumbnail } = req.body;
 
-exports.getCourseById = (req,res)=>{
+    const result = await pool.query(
+      `
+      UPDATE courses
+      SET 
+        title = COALESCE($1, title),
+        description = COALESCE($2, description),
+        thumbnail = COALESCE($3, thumbnail)
+      WHERE id = $4
+      RETURNING *
+      `,
+      [title, description, thumbnail, id]
+    );
 
- const id = req.params.id
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Course not found" });
+    }
 
- const course = db.prepare(`
- SELECT * FROM courses
- WHERE id = ?
- `).get(id)
+    res.json({
+      message: "Course updated",
+      course: result.rows[0],
+    });
 
- res.json(course)
+  } catch (error) {
+    console.error("Update Course Error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
-}
 
-exports.getPopularCourses = (req, res) => {
+/* ✅ Get Course By ID */
+exports.getCourseById = async (req, res) => {
+  try {
+    const id = validateId(req.params.id);
 
-  const courses = db.prepare(`
-    SELECT courses.*, COUNT(enrollments.course_id) as students
-    FROM courses
-    LEFT JOIN enrollments 
-    ON courses.id = enrollments.course_id
-    GROUP BY courses.id
-    ORDER BY students DESC
-    LIMIT 3
-  `).all()
+    if (!id) {
+      return res.status(400).json({ error: "Invalid course ID" });
+    }
 
-  res.json(courses)
-}
+    const result = await pool.query(
+      `
+      SELECT * FROM courses WHERE id = $1
+      `,
+      [id]
+    );
 
-exports.searchCourses = (req, res) => {
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Course not found" });
+    }
 
-  const query = req.query.query || "";
+    res.json(result.rows[0]);
 
-  const courses = db.prepare(`
-    SELECT * FROM courses
-    WHERE LOWER(title) LIKE LOWER(?)
-  `).all(`%${query}%`);
+  } catch (error) {
+    console.error("Get Course Error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
-  res.json(courses);
+
+/* ✅ Get Popular Courses */
+exports.getPopularCourses = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT c.*, COUNT(e.id) AS students
+      FROM courses c
+      LEFT JOIN enrollments e ON c.id = e.course_id
+      GROUP BY c.id
+      ORDER BY students DESC
+      LIMIT 3
+      `
+    );
+
+    res.json(result.rows);
+
+  } catch (error) {
+    console.error("Popular Courses Error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+
+/* ✅ Search Courses */
+exports.searchCourses = async (req, res) => {
+  try {
+    const query = req.query.query || "";
+
+    const result = await pool.query(
+      `
+      SELECT * FROM courses
+      WHERE title ILIKE $1
+      `,
+      [`%${query}%`]
+    );
+
+    res.json(result.rows);
+
+  } catch (error) {
+    console.error("Search Courses Error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
 };

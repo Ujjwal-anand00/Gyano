@@ -1,20 +1,28 @@
-const express = require("express")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
-const authMiddleware = require("../middleware/authMiddleware")
-const progressController = require("../controllers/progressController")
+const authMiddleware = require("../middleware/authMiddleware");
+const progressController = require("../controllers/progressController");
 
+// ✅ Complete lesson
+router.post(
+  "/complete",
+  authMiddleware,
+  progressController.completeLesson
+);
 
-router.post("/complete", authMiddleware, progressController.completeLesson)
-
-router.get("/:student_id/:course_id", authMiddleware, progressController.getCourseProgress)
-
+// ✅ Get progress of logged-in user (all courses)
 router.get(
   "/",
   authMiddleware,
   progressController.getProgress
-)
-router.get("/course-progress", authMiddleware, progressController.getCourseProgress);
+);
 
+// ✅ Get progress for a specific course
+router.get(
+  "/course/:course_id",
+  authMiddleware,
+  progressController.getCourseProgress
+);
 
-module.exports = router
+module.exports = router;

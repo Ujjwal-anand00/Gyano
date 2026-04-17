@@ -1,58 +1,66 @@
-const db = require("../database/db"); 
+const pool = require("../database/db");
 
-const saveNote = (req, res) => {
+// ✅ Save Note
+const saveNote = async (req, res) => {
   try {
     const { user_id, lesson_id, content } = req.body;
 
-    const stmt = db.prepare(`
+    const result = await pool.query(
+      `
       INSERT INTO ai_notes (user_id, lesson_id, content)
-      VALUES (?, ?, ?)
-    `);
+      VALUES ($1, $2, $3)
+      RETURNING id
+      `,
+      [user_id, lesson_id, content]
+    );
 
-    const result = stmt.run(user_id, lesson_id, content);
-
-      res.json({
-        success: true,
-        message: "Note saved",
-        noteId: result.lastInsertRowid,
-      });
+    res.json({
+      success: true,
+      message: "Note saved",
+      noteId: result.rows[0].id,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false });
   }
 };
 
-const getNotes = (req, res) => {
+// ✅ Get Notes
+const getNotes = async (req, res) => {
   try {
     const { user_id } = req.params;
 
-    const stmt = db.prepare(`
+    const result = await pool.query(
+      `
       SELECT * FROM ai_notes
-      WHERE user_id = ?
+      WHERE user_id = $1
       ORDER BY created_at DESC
-    `);
+      `,
+      [user_id]
+    );
 
-    const notes = stmt.all(user_id);
-
-    res.json({ success: true, notes });
+    res.json({ success: true, notes: result.rows });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false });
   }
 };
 
-const deleteNote = (req, res) => {
+// ✅ Delete Note
+const deleteNote = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const stmt = db.prepare(`
-      DELETE FROM ai_notes WHERE id = ?
-    `);
-
-    stmt.run(id);
+    await pool.query(
+      `
+      DELETE FROM ai_notes WHERE id = $1
+      `,
+      [id]
+    );
 
     res.json({ success: true });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ success: false });
   }
 };

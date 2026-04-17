@@ -129,7 +129,7 @@ function Progress() {
 
         <div className="space-y-4">
           {courseProgress.map((course: any) => {
-            const completed = course.progress === 100;
+            const completed = Number(course.progress) >= 100;
 
             return (
               <div

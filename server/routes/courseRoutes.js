@@ -1,26 +1,40 @@
-const express = require("express")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
-const authMiddleware = require("../middleware/authMiddleware")
-const roleMiddleware = require("../middleware/roleMiddleware")
+const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
-const courseController = require("../controllers/courseController")
+const courseController = require("../controllers/courseController");
 
-
+// ✅ CREATE COURSE
 router.post(
- "/",
- authMiddleware,
- roleMiddleware("teacher"),
- courseController.createCourse
-)
+  "/",
+  authMiddleware,
+  roleMiddleware(["teacher", "admin"]),
+  courseController.createCourse
+);
 
-router.get("/", courseController.getCourses)
+// ✅ SPECIAL ROUTES FIRST (IMPORTANT)
+router.get("/popular", courseController.getPopularCourses);
+router.get("/search", courseController.searchCourses);
 
-router.delete("/:id", courseController.deleteCourse)
+// ✅ GENERAL ROUTES AFTER
+router.get("/", courseController.getCourses);
+router.get("/:id", courseController.getCourseById);
 
-router.put("/:id", courseController.updateCourse)
-router.get("/:id", courseController.getCourseById)
-router.get("/courses/popular", courseController.getPopularCourses)
-router.get("/search", courseController.searchCourses)
+// ✅ PROTECTED ACTIONS
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware(["admin"]),
+  courseController.deleteCourse
+);
 
-module.exports = router
+router.put(
+  "/:id",
+  authMiddleware,
+  roleMiddleware(["teacher", "admin"]),
+  courseController.updateCourse
+);
+
+module.exports = router;

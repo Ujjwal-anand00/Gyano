@@ -1,11 +1,10 @@
-const Database = require("better-sqlite3")
+const { Pool } = require("pg");
 
-const db = new Database("learning.db")
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
 
-// prevent locking
-db.pragma("journal_mode = WAL")
-
-// improve concurrency
-db.pragma("synchronous = NORMAL")
-
-module.exports = db
+module.exports = pool;

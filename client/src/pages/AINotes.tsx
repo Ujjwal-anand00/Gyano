@@ -7,7 +7,7 @@ function AINotes() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const loadNotes = async () => {
-    const res = await fetch(`https://gyano.onrender.com/api/ai-notes/${user.id}`);
+    const res = await fetch(`http://localhost:5000/api/ai-notes/${user.id}`);
     const data = await res.json();
 
     if (data.success) {
@@ -16,7 +16,7 @@ function AINotes() {
   };
 
   const deleteNote = async (id: number) => {
-    await fetch(`https://gyano.onrender.com/api/ai-notes/${id}`, {
+    await fetch(`http://localhost:5000/api/ai-notes/${id}`, {
       method: "DELETE",
     });
 

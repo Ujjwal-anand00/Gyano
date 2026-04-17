@@ -1,48 +1,53 @@
+const pool = require("../database/db");
+const puppeteer = require("puppeteer");
+const QRCode = require("qrcode");
 const fs = require("fs");
 const path = require("path");
 
-const logo = fs.readFileSync(path.join(__dirname, "../assets/Gyano.png"));
-const signature = fs.readFileSync(
-  path.join(__dirname, "../assets/signature.png")
-);
+// ✅ Load assets once
+const logoBase64 = `data:image/png;base64,${fs
+  .readFileSync(path.join(__dirname, "../assets/Gyano.png"))
+  .toString("base64")}`;
 
-const logoBase64 = `data:image/png;base64,${logo.toString("base64")}`;
-const signatureBase64 = `data:image/png;base64,${signature.toString("base64")}`;
-
-const puppeteer = require("puppeteer");
-const db = require("../database/db");
-const QRCode = require("qrcode");
+const signatureBase64 = `data:image/png;base64,${fs
+  .readFileSync(path.join(__dirname, "../assets/signature.png"))
+  .toString("base64")}`;
 
 exports.generateCertificate = async (req, res) => {
   const studentId = req.user.id;
   const { courseId } = req.params;
 
   try {
-    const student = db
-      .prepare(
-        `
-      SELECT name FROM users WHERE id = ?
-    `,
-      )
-      .get(studentId);
+    // ✅ Fetch student
+    const studentResult = await pool.query(
+      `SELECT name FROM users WHERE id = $1`,
+      [studentId],
+    );
 
-    const course = db
-      .prepare(
-        `
-      SELECT title FROM courses WHERE id = ?
-    `,
-      )
-      .get(courseId);
+    const student = studentResult.rows[0];
+
+    // ✅ Fetch course
+    const courseResult = await pool.query(
+      `SELECT title FROM courses WHERE id = $1`,
+      [courseId],
+    );
+
+    const course = courseResult.rows[0];
+
+    if (!student || !course) {
+      return res.status(404).json({ error: "Invalid data" });
+    }
 
     const certificateId = `GY-${studentId}-${courseId}-${Date.now()}`;
-
     const date = new Date().toLocaleDateString();
 
-    const verifyLink = `http://localhost:3000/verify/${certificateId}`;
+    // ✅ Use ENV URL
+    const baseUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const verifyLink = `${baseUrl}/verify/${certificateId}`;
 
     const qr = await QRCode.toDataURL(verifyLink);
 
-    const html = `
+const html = `
 <html>
 <head>
 
@@ -223,11 +228,12 @@ ID: ${certificateId}
 </html>
 `;
 
-
-    const browser = await puppeteer.launch();
+    // ✅ FIX for Render
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
 
     const page = await browser.newPage();
-
     await page.setContent(html);
 
     const pdf = await page.pdf({
@@ -239,13 +245,12 @@ ID: ${certificateId}
 
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": "attachment; filename=gyano-certificate.pdf",
+      "Content-Disposition": "attachment; filename=certificate.pdf",
     });
 
     res.send(pdf);
   } catch (error) {
-    console.log(error);
-
+    console.error("Certificate Error:", error);
     res.status(500).json({ error: "Certificate generation failed" });
   }
 };
