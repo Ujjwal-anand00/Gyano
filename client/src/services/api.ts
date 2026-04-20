@@ -1,8 +1,12 @@
 import axios from "axios"
 
+
 const api = axios.create({
- baseURL:"https://gyano.onrender.com"
-})
+  baseURL:
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000"
+      : "https://gyano.onrender.com",
+});
 
 api.interceptors.request.use((config)=>{
 

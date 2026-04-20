@@ -4,6 +4,7 @@ import api from "../services/api";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { CheckCircle } from "lucide-react";
 import AIAssistant from "../components/AIAssistant";
+import { saveVideo, getVideo } from "../services/videoService";
 
 function LessonView() {
   const { id } = useParams();
@@ -16,6 +17,8 @@ function LessonView() {
   const [lessons, setLessons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [popup, setPopup] = useState(false);
+  const [videoSrc, setVideoSrc] = useState<string>("");
+  const [isDownloaded, setIsDownloaded] = useState<boolean>(false);
 
   /* LOAD LESSON */
   useEffect(() => {
@@ -26,6 +29,7 @@ function LessonView() {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
+        console.log("LESSON DATA:", res.data); // 👈 ADD THIS
         setLesson(res.data);
         setLoading(false);
       })
@@ -55,6 +59,26 @@ function LessonView() {
 
     return url;
   };
+
+  // Download video when lesson loads
+
+  useEffect(() => {
+    if (!lesson) return;
+
+    const loadVideo = async () => {
+      const localVideo = await getVideo(String(lesson.id));
+
+      if (localVideo?.blob) {
+        const localUrl = URL.createObjectURL(localVideo.blob);
+        setVideoSrc(localUrl);
+        setIsDownloaded(true);
+      } else {
+        setVideoSrc(lesson.video_url);
+      }
+    };
+
+    loadVideo();
+  }, [lesson]);
 
   /* LOAD COURSE LESSONS */
   useEffect(() => {
@@ -112,13 +136,29 @@ function LessonView() {
     await api.post(
       "/api/progress/complete",
       { lesson_id: lesson.id },
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` } },
     );
 
     setPopup(true);
     setTimeout(() => setPopup(false), 3000);
 
     loadProgress();
+  };
+
+  // DOWNLOAD VIDEO
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(lesson.video_url);
+      const blob = await response.blob();
+
+      await saveVideo(String(lesson.id), blob);
+      setIsDownloaded(true);
+
+      alert("Downloaded for offline 🎉");
+    } catch (err) {
+      console.error(err);
+      alert("Download failed");
+    }
   };
 
   /* QUIZ */
@@ -171,7 +211,6 @@ function LessonView() {
 
       <div className="p-4 sm:p-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-
           {/* MAIN CONTENT */}
           <div className="lg:col-span-3">
             <h1 className="text-2xl sm:text-3xl font-bold mb-6">
@@ -185,22 +224,34 @@ function LessonView() {
                 <span>{progress}%</span>
               </div>
 
-              <div className="w-full bg-gray-200 h-3 rounded-full">
-                <div
-                  className="bg-blue-600 h-3 rounded-full"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
+                <div className="w-full bg-gray-200 h-3 rounded-full">
+                  <div
+                    className="bg-blue-600 h-3 rounded-full"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
             </div>
+
+            {/* DOWNLOAD BUTTON */}
+
+                {lesson.video_url && (
+                  <button
+                    onClick={handleDownload}
+                    disabled={isDownloaded}
+                    className="mb-4 bg-blue-500 text-white px-4 py-2 rounded"
+                  >
+                    {isDownloaded ? "Downloaded ✔️" : "Download for Offline"}
+                  </button>
+                )}
 
             {/* VIDEO */}
             {lesson.video_url && (
               <div className="bg-white shadow-lg rounded-xl overflow-hidden mb-6">
                 <div className="aspect-video">
-                  <iframe
+                  <video
                     className="w-full h-full"
-                    src={`${formatVideo(lesson.video_url)}?enablejsapi=1`}
-                    allowFullScreen
+                    controls
+                    src={videoSrc || lesson.video_url}
                   />
                 </div>
               </div>
@@ -249,7 +300,7 @@ function LessonView() {
                           />
                           {opt}
                         </label>
-                      )
+                      ),
                     )}
                   </div>
                 ))}
@@ -300,16 +351,13 @@ function LessonView() {
                 key={l.id}
                 to={`/lesson/${l.id}`}
                 className={`block p-2 rounded mb-2 text-sm ${
-                  l.id === lesson.id
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100"
+                  l.id === lesson.id ? "bg-blue-600 text-white" : "bg-gray-100"
                 }`}
               >
                 {l.title}
               </Link>
             ))}
           </div>
-
         </div>
       </div>
     </DashboardLayout>
