@@ -155,7 +155,7 @@ function StudentDashboard() {
           <h2 className="text-xl font-semibold mb-6">My Courses</h2>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {enrolledCourses.map((course: any) => (
+            {enrolledCourses.map((course: any , lesson: any) => (
               <div
                 key={course.id}
                 className="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-xl transition"
@@ -177,7 +177,7 @@ function StudentDashboard() {
                   </span>
 
                   <button
-                    onClick={() => navigate(`/course/${course.id}`)}
+                    onClick={() => navigate(`/lessons`)}
                     className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
                   >
                     Continue Learning
