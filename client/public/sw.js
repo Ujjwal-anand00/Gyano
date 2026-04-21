@@ -1,23 +1,21 @@
-const CACHE_NAME = "gyano-v1";
+const CACHE_NAME = "gyano-v2"; 
 
-const urlsToCache = [
-  "/",
-  "/index.html",
-  "/manifest.json"
-];
+const urlsToCache = ["/", "/index.html", "/manifest.json"];
 
-// Install → cache basic files
+// Install → cache core files
 self.addEventListener("install", (event) => {
+  self.skipWaiting(); // 🔥 force update
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log("Caching app shell");
       return cache.addAll(urlsToCache);
     })
   );
 });
 
-// Activate → clean old cache
+// Activate → delete old caches
 self.addEventListener("activate", (event) => {
+  clients.claim(); 
+
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
@@ -31,11 +29,22 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Fetch → serve from cache first
+// Fetch → smart handling
 self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+
+
+  if (url.pathname.startsWith("/api")) return;
+  if (event.request.method !== "GET") return;
+
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request)
+      .then((response) => {
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, response.clone());
+          return response;
+        });
+      })
+      .catch(() => caches.match(event.request))
   );
 });

@@ -496,7 +496,7 @@ function Home() {
               </button>
 
               <button
-                onClick={() => navigate("/courses")}
+                onClick={() => navigate("/register")}
                 className="w-full sm:w-auto border border-gray-300 px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-100 transition"
               >
                 {t("CTA_btn2")}

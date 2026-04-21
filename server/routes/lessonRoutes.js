@@ -36,7 +36,6 @@ router.post(
 /* GET LESSONS BY COURSE */
 router.get(
  "/course/:courseId",
- authMiddleware,
  lessonController.getLessonsByCourse
 )
 
