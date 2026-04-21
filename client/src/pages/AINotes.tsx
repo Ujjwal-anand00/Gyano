@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
+const BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://gyano.onrender.com";
 
 function AINotes() {
   const [notes, setNotes] = useState<any[]>([]);
@@ -7,7 +11,7 @@ function AINotes() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const loadNotes = async () => {
-    const res = await fetch(`http://localhost:5000/api/ai-notes/${user.id}`);
+    const res = await fetch(`${BASE_URL}/api/ai-notes/${user.id}`);
     const data = await res.json();
 
     if (data.success) {
@@ -16,7 +20,7 @@ function AINotes() {
   };
 
   const deleteNote = async (id: number) => {
-    await fetch(`http://localhost:5000/api/ai-notes/${id}`, {
+    await fetch(`${BASE_URL}/api/ai-notes/${id}`, {
       method: "DELETE",
     });
 

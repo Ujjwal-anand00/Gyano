@@ -1,11 +1,14 @@
 import axios from "axios"
 
 
+const BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://gyano.onrender.com";
+
+
 const api = axios.create({
-  baseURL:
-    window.location.hostname === "localhost"
-      ? "http://localhost:5000"
-      : "https://gyano.onrender.com",
+  baseURL: BASE_URL,
 });
 
 api.interceptors.request.use((config)=>{

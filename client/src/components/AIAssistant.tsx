@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+const BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://gyano.onrender.com";
 
 type LessonType = {
   content?: string;
@@ -21,7 +25,7 @@ const AIAssistant: React.FC<Props> = ({ lesson }) => {
       setLoading(true);
       setAnswer("");
 
-      const res = await fetch("http://localhost:5000/api/ai/ask", {
+      const res = await fetch(`${BASE_URL}/api/ai/ask`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,10 +41,10 @@ const AIAssistant: React.FC<Props> = ({ lesson }) => {
 
       const data = await res.json();
 
-      if (data.success) {
+      if (data.answer) {
         setAnswer(data.answer);
       } else {
-        setAnswer("Something went wrong");
+        setAnswer(data.message || "Something went wrong");
       }
     } catch (error) {
       console.error(error);
@@ -55,7 +59,7 @@ const AIAssistant: React.FC<Props> = ({ lesson }) => {
     try {
       const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-      const res = await fetch("http://localhost:5000/api/ai-notes/save", {
+      const res = await fetch(`${BASE_URL}/api/ai-notes/save`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

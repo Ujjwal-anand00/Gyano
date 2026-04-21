@@ -30,7 +30,7 @@ function Home() {
   const [popularCourses, setPopularCourses] = useState([]);
 
   useEffect(() => {
-    api.get("/courses/popular").then((res) => {
+    api.get("/api/courses/popular").then((res) => {
       setPopularCourses(res.data);
     });
   }, []);
