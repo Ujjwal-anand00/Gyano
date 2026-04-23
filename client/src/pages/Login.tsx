@@ -39,7 +39,9 @@ function Login() {
         }),
       );
 
-      if (res.data.role === "teacher") {
+      if (res.data.role === "admin") {
+        navigate("/admin");
+      } else if (res.data.role === "teacher") {
         navigate("/teacher");
       } else {
         navigate("/student");

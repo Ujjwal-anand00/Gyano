@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Skeleton from "./components/Skeleton";
+import ProtectedRoute from "./components/ProtectedRoute";
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
+const AdminCreateTeacher = lazy(() => import("./pages/AdminCreateTeacher"));
 
 const StudentDashboard = lazy(() => import("./pages/StudentDashboard"));
 const TeacherDashboard = lazy(() => import("./pages/TeacherDashboard"));
@@ -34,6 +36,22 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminCreateTeacher />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/create-teacher"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminCreateTeacher />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="/student" element={<StudentDashboard />} />
           <Route path="/teacher" element={<TeacherDashboard />} />

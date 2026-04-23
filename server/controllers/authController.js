@@ -8,43 +8,28 @@ if (!SECRET) {
   throw new Error("JWT_SECRET is not defined in environment variables");
 }
 
-/* REGISTER */
 exports.register = async (req, res) => {
   try {
-    let { name, email, password, role } = req.body;
+    let { name, email, password } = req.body;
 
-    // ✅ Basic validation
     if (!name || !email || !password) {
       return res.status(400).json({
         error: "All fields are required",
       });
     }
 
-    // ✅ Clean input
     name = name.trim();
     email = email.trim().toLowerCase();
     password = password.trim();
 
-    // ✅ Password validation
     if (password.length < 6) {
       return res.status(400).json({
         error: "Password must be at least 6 characters",
       });
     }
 
-    // ✅ Role validation (SAFE)
-    const allowedRoles = ["student", "teacher"];
+    const role = "student";
 
-    if (!allowedRoles.includes(role)) {
-      role = "student"; // fallback
-    }
-
-    // 🚨 Never allow admin creation via API
-    if (role === "admin") {
-      role = "student";
-    }
-
-    // ✅ Check existing user
     const existingUser = await pool.query(
       `SELECT id FROM users WHERE email = $1`,
       [email]
@@ -56,10 +41,8 @@ exports.register = async (req, res) => {
       });
     }
 
-    // ✅ Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // ✅ Insert user
     const result = await pool.query(
       `
       INSERT INTO users (name, email, password, role)
@@ -73,7 +56,6 @@ exports.register = async (req, res) => {
       message: "User registered successfully",
       user: result.rows[0],
     });
-
   } catch (err) {
     console.error("Register Error:", err);
     res.status(500).json({
@@ -82,13 +64,10 @@ exports.register = async (req, res) => {
   }
 };
 
-
-/* LOGIN */
 exports.login = async (req, res) => {
   try {
     let { email, password } = req.body;
 
-    // ✅ Validate input
     if (!email || !password) {
       return res.status(400).json({
         error: "Email and password required",
@@ -98,7 +77,6 @@ exports.login = async (req, res) => {
     email = email.trim().toLowerCase();
     password = password.trim();
 
-    // ✅ Fetch user
     const result = await pool.query(
       `SELECT * FROM users WHERE email = $1`,
       [email]
@@ -112,7 +90,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // ✅ Compare password
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
@@ -121,7 +98,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // ✅ Generate token
     const token = jwt.sign(
       { id: user.id, role: user.role },
       SECRET,
@@ -135,7 +111,6 @@ exports.login = async (req, res) => {
       name: user.name,
       email: user.email,
     });
-
   } catch (err) {
     console.error("Login Error:", err);
     res.status(500).json({

@@ -7,6 +7,8 @@ import {
   ClipboardList,
   LogOut,
   Trophy,
+  ShieldCheck,
+  UserPlus,
 } from "lucide-react";
 
 function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
@@ -17,6 +19,8 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
+    localStorage.removeItem("username");
+    localStorage.removeItem("user");
     navigate("/");
   };
 
@@ -42,7 +46,6 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
 
   return (
     <>
-      {/* OVERLAY (mobile) */}
       {mobileOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-40 lg:hidden"
@@ -50,15 +53,20 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
         />
       )}
 
-      {/* SIDEBAR */}
       <div
         className={`fixed lg:static top-0 left-0 h-full bg-white border-r flex flex-col z-50 transition-all duration-300
         ${open ? "w-64" : "w-20"}
         ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
       >
-        {/* NAV ITEMS */}
         <div className="flex flex-col gap-2 p-4 flex-1 mt-6">
+          {role === "admin" && (
+            <>
+              {navItem("/admin", "Admin Panel", ShieldCheck)}
+              {navItem("/admin/create-teacher", "Create Teacher", UserPlus)}
+            </>
+          )}
+
           {role === "teacher" && (
             <>
               {navItem("/teacher", "Dashboard", LayoutDashboard)}
@@ -81,7 +89,6 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
           )}
         </div>
 
-        {/* LOGOUT */}
         <div className="border-t p-4">
           <button
             onClick={handleLogout}

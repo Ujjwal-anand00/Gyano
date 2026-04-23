@@ -11,6 +11,7 @@ const errorHandler = require("./middleware/errorHandler");
 
 // Routes
 const authRoutes = require("./routes/authRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const lessonRoutes = require("./routes/lessonRoutes");
 const quizRoutes = require("./routes/quizRoutes");
 const progressRoutes = require("./routes/progressRoutes");
@@ -32,6 +33,7 @@ app.use(errorHandler);
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/lessons", lessonRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/progress", progressRoutes);
