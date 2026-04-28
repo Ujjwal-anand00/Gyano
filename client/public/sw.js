@@ -1,10 +1,10 @@
-const CACHE_NAME = "gyano-v2"; 
+const CACHE_NAME = "gyano-v3"; 
 
 const urlsToCache = ["/", "/index.html", "/manifest.json"];
 
 // Install → cache core files
 self.addEventListener("install", (event) => {
-  self.skipWaiting(); // 🔥 force update
+  self.skipWaiting(); 
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(urlsToCache);

@@ -125,8 +125,8 @@ function TeacherDashboard() {
   const tabStyle = (tab: string) =>
     `flex items-center gap-2 px-5 py-2 rounded-lg font-medium transition ${
       activeTab === tab
-        ? "bg-blue-600 text-white shadow"
-        : "bg-gray-100 hover:bg-gray-200"
+        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20 scale-[1.02]"
+        : "bg-white/70 hover:bg-gray-100"
     }`;
 
   return (
@@ -146,7 +146,7 @@ function TeacherDashboard() {
 
         {/* TABS */}
 
-        <div className="flex gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <button
             className={tabStyle("course")}
             onClick={() => setActiveTab("course")}
@@ -166,7 +166,7 @@ function TeacherDashboard() {
 
         {/* FORM CARD */}
 
-        <div className="bg-white shadow-lg rounded-xl p-8">
+        <div className="gyano-glass-card p-8">
           {/* CREATE COURSE */}
 
           {activeTab === "course" && (
@@ -211,7 +211,7 @@ function TeacherDashboard() {
                 </div>
 
                 <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition"
+                  className="gyano-button bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition"
                   onClick={createCourse}
                 >
                   Create Course
@@ -275,7 +275,7 @@ function TeacherDashboard() {
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* VIDEO UPLOAD */}
 
-                  <div className="border-2 border-dashed rounded-xl p-6 bg-gray-50 hover:bg-gray-100 transition text-center">
+                  <div className="rounded-2xl border-2 border-dashed border-blue-100 p-6 bg-white/70 hover:bg-blue-50/70 transition text-center">
                     <Video className="mx-auto text-blue-600 mb-3" size={32} />
 
                     <p className="font-medium text-gray-700">
@@ -286,7 +286,7 @@ function TeacherDashboard() {
                       MP4, MOV up to 500MB
                     </p>
 
-                    <label className="cursor-pointer flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg w-fit mx-auto hover:bg-blue-700 transition">
+                    <label className="gyano-button cursor-pointer flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg w-fit mx-auto hover:bg-blue-700 transition">
                       <UploadCloud size={16} />
                       Choose Video
                       <input
@@ -322,7 +322,7 @@ function TeacherDashboard() {
 
                   {/* THUMBNAIL UPLOAD */}
 
-                  <div className="border-2 border-dashed rounded-xl p-6 bg-gray-50 hover:bg-gray-100 transition text-center">
+                  <div className="rounded-2xl border-2 border-dashed border-purple-100 p-6 bg-white/70 hover:bg-purple-50/70 transition text-center">
                     <Image className="mx-auto text-purple-600 mb-3" size={32} />
 
                     <p className="font-medium text-gray-700">
@@ -333,7 +333,7 @@ function TeacherDashboard() {
                       JPG, PNG recommended
                     </p>
 
-                    <label className="cursor-pointer flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg w-fit mx-auto hover:bg-purple-700 transition">
+                    <label className="gyano-button cursor-pointer flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg w-fit mx-auto hover:bg-purple-700 transition">
                       <UploadCloud size={16} />
                       Choose Image
                       <input
@@ -389,7 +389,7 @@ function TeacherDashboard() {
                 <button
                   disabled={uploading}
                   onClick={createLesson}
-                  className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition shadow 
+                  className={`gyano-button flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-white font-medium transition shadow 
   ${uploading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"}`}
                 >
                   {uploading ? (

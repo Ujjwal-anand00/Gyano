@@ -60,7 +60,7 @@ function Topbar({ setOpen, setMobileOpen }: any) {
       </div>
 
       {/* SEARCH BAR */}
-      <div className="relative hidden md:flex items-center bg-gray-100 px-4 py-2 rounded-xl w-80 lg:w-96">
+      {/* <div className="relative hidden md:flex items-center bg-gray-100 px-4 py-2 rounded-xl w-80 lg:w-96">
         <Search size={16} className="text-gray-400" />
 
         <input
@@ -69,10 +69,10 @@ function Topbar({ setOpen, setMobileOpen }: any) {
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
           className="bg-transparent outline-none ml-3 text-sm w-full"
-        />
+        /> */}
 
         {/* SEARCH DROPDOWN */}
-        {search && courses.length > 0 && (
+        {/* {search && courses.length > 0 && (
           <div className="absolute top-12 left-0 w-full bg-white border rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
             {courses.map((course: any) => (
               <div
@@ -88,7 +88,7 @@ function Topbar({ setOpen, setMobileOpen }: any) {
             ))}
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* RIGHT SECTION */}
       <div className="flex items-center gap-4 sm:gap-6">
@@ -121,7 +121,13 @@ function Topbar({ setOpen, setMobileOpen }: any) {
           {/* Dropdown */}
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-44 bg-white border rounded-xl shadow-lg overflow-hidden">
-              <button className="flex items-center gap-2 px-4 py-2 w-full hover:bg-gray-100 text-sm">
+              <button
+                onClick={() => {
+                  setDropdownOpen(false);
+                  navigate("/profile");
+                }}
+                className="flex items-center gap-2 px-4 py-2 w-full hover:bg-gray-100 text-sm"
+              >
                 <User size={16} />
                 Profile
               </button>

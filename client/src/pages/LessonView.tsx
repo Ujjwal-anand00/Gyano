@@ -5,6 +5,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import { CheckCircle } from "lucide-react";
 import AIAssistant from "../components/AIAssistant";
 import { saveVideo, getVideo } from "../services/videoService";
+import { motion } from "framer-motion";
 
 function LessonView() {
   const { id } = useParams();
@@ -203,14 +204,24 @@ function LessonView() {
     <DashboardLayout>
       {/* SUCCESS POPUP */}
       {popup && (
-        <div className="fixed top-6 right-6 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50">
+        <motion.div
+          initial={{ opacity: 0, y: -12, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          className="fixed top-6 right-6 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 z-50"
+        >
           <CheckCircle size={18} />
           Lesson completed successfully
-        </div>
+        </motion.div>
       )}
 
       <div className="p-4 sm:p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+        <motion.div
+          key={lesson.id}
+          className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+        >
           {/* MAIN CONTENT */}
           <div className="lg:col-span-3">
             <h1 className="text-2xl sm:text-3xl font-bold mb-6">
@@ -238,7 +249,7 @@ function LessonView() {
                   <button
                     onClick={handleDownload}
                     disabled={isDownloaded}
-                    className="mb-4 bg-blue-500 text-white px-4 py-2 rounded"
+                    className="gyano-button mb-4 bg-blue-500 text-white px-4 py-2 rounded-lg disabled:scale-100 disabled:opacity-70"
                   >
                     {isDownloaded ? "Downloaded ✔️" : "Download for Offline"}
                   </button>
@@ -246,7 +257,7 @@ function LessonView() {
 
             {/* VIDEO */}
             {lesson.video_url && (
-              <div className="bg-white shadow-lg rounded-xl overflow-hidden mb-6">
+              <div className="gyano-glass-card overflow-hidden mb-6 lg:sticky lg:top-24 z-20">
                 <div className="aspect-video">
                   <video
                     className="w-full h-full"
@@ -258,27 +269,27 @@ function LessonView() {
             )}
 
             {/* CONTENT */}
-            <div className="bg-white shadow rounded-xl p-4 sm:p-6 mb-6">
+            <div className="gyano-glass-card p-4 sm:p-6 mb-6">
               <h2 className="text-lg font-semibold mb-3">Lesson Content</h2>
               <p className="text-gray-600">{lesson.content}</p>
             </div>
 
             {/* AI */}
-            <div className="bg-white shadow rounded-xl p-4 sm:p-6 mb-6">
+            <div className="gyano-glass-card p-4 sm:p-6 mb-6">
               <AIAssistant lesson={lesson} />
             </div>
 
             {/* COMPLETE */}
             <button
               onClick={markLessonComplete}
-              className="w-full sm:w-auto bg-green-600 text-white px-6 py-3 rounded-lg mb-8"
+              className="gyano-button w-full sm:w-auto bg-green-600 text-white px-6 py-3 rounded-lg mb-8"
             >
               Mark as Completed
             </button>
 
             {/* QUIZ */}
             {questions.length > 0 && (
-              <div className="bg-white shadow rounded-xl p-4 sm:p-6">
+              <div className="gyano-glass-card p-4 sm:p-6">
                 <h2 className="text-xl font-semibold mb-6">Quiz</h2>
 
                 {questions.map((q: any, index: number) => (
@@ -291,7 +302,7 @@ function LessonView() {
                       (opt, i) => (
                         <label
                           key={i}
-                          className="flex items-center gap-2 mb-2 p-2 bg-gray-50 rounded"
+                          className="flex items-center gap-2 mb-2 p-3 bg-white/70 rounded-lg transition hover:bg-blue-50"
                         >
                           <input
                             type="radio"
@@ -307,7 +318,7 @@ function LessonView() {
 
                 <button
                   onClick={submitQuiz}
-                  className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded"
+                  className="gyano-button w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded-lg"
                 >
                   Submit Quiz
                 </button>
@@ -325,7 +336,7 @@ function LessonView() {
               {prevLesson && (
                 <Link
                   to={`/lesson/${prevLesson.id}`}
-                  className="w-full sm:w-auto text-center bg-gray-800 text-white px-5 py-2 rounded"
+                  className="gyano-button w-full sm:w-auto text-center bg-gray-800 text-white px-5 py-2 rounded-lg"
                 >
                   ← Previous
                 </Link>
@@ -334,7 +345,7 @@ function LessonView() {
               {nextLesson && (
                 <Link
                   to={`/lesson/${nextLesson.id}`}
-                  className="w-full sm:w-auto text-center bg-blue-600 text-white px-5 py-2 rounded"
+                  className="gyano-button w-full sm:w-auto text-center bg-blue-600 text-white px-5 py-2 rounded-lg"
                 >
                   Next →
                 </Link>
@@ -343,14 +354,14 @@ function LessonView() {
           </div>
 
           {/* SIDEBAR */}
-          <div className="bg-white shadow rounded-xl p-4 h-fit lg:sticky lg:top-24">
+          <div className="gyano-glass-card p-4 h-fit lg:sticky lg:top-24">
             <h3 className="font-semibold mb-4">Course Content</h3>
 
             {lessons.map((l) => (
               <Link
                 key={l.id}
                 to={`/lesson/${l.id}`}
-                className={`block p-2 rounded mb-2 text-sm ${
+                className={`block p-3 rounded-lg mb-2 text-sm transition ${
                   l.id === lesson.id ? "bg-blue-600 text-white" : "bg-gray-100"
                 }`}
               >
@@ -358,7 +369,7 @@ function LessonView() {
               </Link>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </DashboardLayout>
   );

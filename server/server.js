@@ -23,6 +23,8 @@ const leaderboardRoutes = require("./routes/leaderboardRoutes");
 const certificateRoutes = require("./routes/certificateRoutes");
 const aiRoutes = require("./routes/aiRoutes");
 const aiNoteRoutes = require("./routes/aiNoteRoutes");
+const searchRoutes = require("./routes/searchRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -45,6 +47,8 @@ app.use("/api/leaderboard", leaderboardRoutes);
 app.use("/api/certificate", certificateRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/ai-notes", aiNoteRoutes);
+app.use("/api/search", searchRoutes);
+app.use("/api/users", userRoutes);
 
 // Health check
 app.get("/", (req, res) => {

@@ -4,6 +4,9 @@ import api from "../services/api";
 import DashboardLayout from "../layouts/DashboardLayout";
 
 import { BookOpen, CheckCircle, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
+import { fadeUp, staggerContainer } from "../components/AnimatedWrapper";
+import SearchBar from "../components/SearchBar";
 
 function StudentDashboard() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -78,12 +81,14 @@ function StudentDashboard() {
 
   /* SPLIT COURSES */
 
+  const getCourseId = (course: any) => Number(course.course_id || course.id);
+
   const enrolledCourses = courses.filter((c) =>
-    myCourses.includes(Number(c.id)),
+    myCourses.includes(getCourseId(c)),
   );
 
   const exploreCourses = courses.filter(
-    (c) => !myCourses.includes(Number(c.id)),
+    (c) => !myCourses.includes(getCourseId(c)),
   );
 
   return (
@@ -98,11 +103,20 @@ function StudentDashboard() {
         </p>
       </div>
 
+      <div className="mb-10">
+        <SearchBar />
+      </div>
+
       {/* STATS */}
 
       {progress && (
-        <div className="grid md:grid-cols-3 gap-6 mb-10">
-          <div className="bg-white shadow-lg rounded-xl p-6 flex items-center gap-4">
+        <motion.div
+          className="grid md:grid-cols-3 gap-6 mb-10"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={fadeUp} className="gyano-glass-card p-6 flex items-center gap-4">
             <div className="bg-blue-100 p-3 rounded-lg">
               <CheckCircle className="text-blue-600" />
             </div>
@@ -113,9 +127,9 @@ function StudentDashboard() {
                 {progress.completedLessons}
               </h2>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="bg-white shadow-lg rounded-xl p-6 flex items-center gap-4">
+          <motion.div variants={fadeUp} className="gyano-glass-card p-6 flex items-center gap-4">
             <div className="bg-purple-100 p-3 rounded-lg">
               <BookOpen className="text-purple-600" />
             </div>
@@ -124,17 +138,17 @@ function StudentDashboard() {
               <p className="text-gray-500 text-sm">Total Lessons</p>
               <h2 className="text-2xl font-bold">{progress.totalLessons}</h2>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg rounded-xl p-6 flex items-center gap-4">
+          <motion.div variants={fadeUp} className="rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl shadow-blue-500/20 p-6 flex items-center gap-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
             <TrendingUp />
 
             <div>
               <p className="text-sm opacity-80">Overall Progress</p>
               <h2 className="text-2xl font-bold">{progress.progress}%</h2>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* AI NOTES BUTTON */}
@@ -142,7 +156,7 @@ function StudentDashboard() {
       <div className="mb-10 flex justify-end">
         <button
           onClick={() => navigate("/ai-notes")}
-          className="bg-yellow-500 hover:bg-yellow-600 text-black px-5 py-2 rounded-lg shadow"
+          className="gyano-button bg-yellow-500 hover:bg-yellow-600 text-black px-5 py-2 rounded-lg shadow"
         >
           📄 View AI Notes
         </button>
@@ -154,11 +168,17 @@ function StudentDashboard() {
         <div className="mb-12">
           <h2 className="text-xl font-semibold mb-6">My Courses</h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {enrolledCourses.map((course: any , lesson: any) => (
-              <div
+          <motion.div
+            className="grid md:grid-cols-3 gap-8"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
+            {enrolledCourses.map((course: any) => (
+              <motion.div
                 key={course.id}
-                className="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-xl transition"
+                variants={fadeUp}
+                className="gyano-card overflow-hidden"
               >
                 <img
                   src={course.thumbnail}
@@ -178,14 +198,14 @@ function StudentDashboard() {
 
                   <button
                     onClick={() => navigate(`/lessons`)}
-                    className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+                    className="gyano-button w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
                   >
                     Continue Learning
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       )}
 
@@ -194,34 +214,60 @@ function StudentDashboard() {
       <div>
         <h2 className="text-xl font-semibold mb-6">Explore Courses</h2>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {exploreCourses.map((course: any) => (
-            <div
-              key={course.id}
-              className="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-xl transition"
+        <motion.div
+          className="grid md:grid-cols-3 gap-8"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          {exploreCourses.length > 0 ? (
+            exploreCourses.map((course: any) => (
+              <motion.div
+                key={getCourseId(course)}
+                variants={fadeUp}
+                className="gyano-card overflow-hidden"
+              >
+                <img
+                  src={course.thumbnail}
+                  className="h-40 w-full object-cover"
+                />
+
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold mb-2">
+                    {course.title}
+                  </h3>
+
+                  <p className="text-gray-500 text-sm mb-4 line-clamp-2">
+                    {course.description}
+                  </p>
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <button
+                      onClick={() => navigate(`/course/${getCourseId(course)}`)}
+                      className="gyano-button w-full rounded-lg border border-blue-200 bg-white py-2 text-blue-600 transition hover:bg-blue-50"
+                    >
+                      View Details
+                    </button>
+
+                    <button
+                      onClick={() => enrollCourse(getCourseId(course))}
+                      className="gyano-button w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+                    >
+                      Enroll Course
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))
+          ) : (
+            <motion.div
+              variants={fadeUp}
+              className="gyano-glass-card p-6 text-gray-500 md:col-span-3"
             >
-              <img
-                src={course.thumbnail}
-                className="h-40 w-full object-cover"
-              />
-
-              <div className="p-5">
-                <h3 className="text-lg font-semibold mb-2">{course.title}</h3>
-
-                <p className="text-gray-500 text-sm mb-4 line-clamp-2">
-                  {course.description}
-                </p>
-
-                <button
-                  onClick={() => enrollCourse(course.id)}
-                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                >
-                  Enroll Course
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+              No courses available to explore right now.
+            </motion.div>
+          )}
+        </motion.div>
       </div>
     </DashboardLayout>
   );

@@ -27,6 +27,7 @@ const TeacherAnalytics = lazy(() => import("./pages/TeacherAnalytics"));
 
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
 const AINotes = lazy(() => import("./pages/AINotes"));
+const Profile = lazy(() => import("./pages/Profile"));
 
 function App() {
   return (
@@ -73,6 +74,14 @@ function App() {
 
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/ai-notes" element={<AINotes />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Suspense>
     </BrowserRouter>

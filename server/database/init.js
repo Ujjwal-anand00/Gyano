@@ -44,6 +44,18 @@ const initDB = async () => {
     ALTER TABLE users
     ALTER COLUMN role SET DEFAULT 'student';
 
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS phone VARCHAR(15);
+
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS bio TEXT;
+
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS profile_pic TEXT;
+
+    ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS skills TEXT[] DEFAULT '{}';
+
     DO $$
     BEGIN
       IF NOT EXISTS (
@@ -132,6 +144,12 @@ const initDB = async () => {
       content TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE INDEX IF NOT EXISTS idx_courses_title
+    ON courses USING gin(to_tsvector('english', COALESCE(title, '')));
+
+    CREATE INDEX IF NOT EXISTS idx_lessons_title
+    ON lessons USING gin(to_tsvector('english', COALESCE(title, '')));
 
     `);
 

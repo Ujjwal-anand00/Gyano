@@ -17,10 +17,14 @@ import {
 } from "lucide-react";
 
 import api from "../services/api";
-import heroImage from "../assets/EdTech-Platform.avif";
 import CTC from "../assets/CTC.png";
 import Nav from "./HomeNav";
 import { useTranslation } from "react-i18next";
+import CodeBlock from "../components/CodeBlock";
+import AnimatedWrapper, {
+  fadeUp,
+  staggerContainer,
+} from "../components/AnimatedWrapper";
 
 function Home() {
   const navigate = useNavigate();
@@ -44,9 +48,10 @@ function Home() {
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 12 }}
       transition={{ duration: 0.6 }}
-      className="min-h-screen bg-gray-50"
+      className="gyano-page-shell min-h-screen bg-gray-50"
     >
       {/* NAVBAR */}
 
@@ -54,9 +59,9 @@ function Home() {
 
       {/* HERO SECTION */}
 
-      <section className="py-28 px-10 bg-gradient-to-br from-blue-600 via-indigo-500 to-blue-400 text-white">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <div>
+      <section className="gyano-section py-28 px-6 sm:px-10 bg-gradient-to-br from-blue-600 via-indigo-500 to-blue-400 text-white">
+        <div className="relative z-10 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+          <AnimatedWrapper>
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               {t("hero_title")}
             </h1>
@@ -68,31 +73,26 @@ function Home() {
 
             <p className="text-indigo-100 mb-8 max-w-lg">{t("hero_quote")}</p>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => navigate("/register")}
-                className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition shadow-lg"
+                className="gyano-button bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition shadow-lg"
               >
                 {t("start_learning")}
               </button>
 
               <button
                 onClick={() => navigate("/login")}
-                className="border border-white px-8 py-3 rounded-lg hover:bg-white hover:text-blue-600 transition"
+                className="gyano-button border border-white px-8 py-3 rounded-lg hover:bg-white hover:text-blue-600 transition"
               >
                 {t("browse_courses")}
               </button>
             </div>
-          </div>
+          </AnimatedWrapper>
 
-          <div className="flex justify-center">
-            <motion.img
-              src={heroImage}
-              className="rounded-2xl shadow-2xl w-full max-w-md"
-              animate={{ y: [0, -20, 0] }}
-              transition={{ duration: 4, repeat: Infinity }}
-            />
-          </div>
+          <AnimatedWrapper delay={0.15} className="flex justify-center">
+            <CodeBlock />
+          </AnimatedWrapper>
         </div>
       </section>
 
@@ -108,10 +108,16 @@ function Home() {
             {t("bridging_desc")}
           </p>
 
-          <div className="grid md:grid-cols-3 gap-10">
+          <motion.div
+            className="grid md:grid-cols-3 gap-10"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.18 }}
+          >
             {/* CARD 1 */}
 
-            <div className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-10">
               <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-100">
                 <BookOpen className="text-blue-600" />
               </div>
@@ -121,11 +127,11 @@ function Home() {
               </h3>
 
               <p className="text-gray-600">{t("accessible_learning_desc")}</p>
-            </div>
+            </motion.div>
 
             {/* CARD 2 */}
 
-            <div className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-10">
               <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-purple-100">
                 <Code className="text-purple-600" />
               </div>
@@ -135,11 +141,11 @@ function Home() {
               </h3>
 
               <p className="text-gray-600">{t("digital_skills_desc")}</p>
-            </div>
+            </motion.div>
 
             {/* CARD 3 */}
 
-            <div className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-10">
               <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-green-100">
                 <Users className="text-green-600" />
               </div>
@@ -149,8 +155,8 @@ function Home() {
               </h3>
 
               <p className="text-gray-600">{t("empowering_youth_desc")}</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -166,10 +172,16 @@ function Home() {
             {t("gyano_works_desc")}
           </p>
 
-          <div className="grid md:grid-cols-4 gap-10">
+          <motion.div
+            className="grid md:grid-cols-4 gap-10"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.18 }}
+          >
             {/* STEP 1 */}
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-8">
               <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-100">
                 <UserPlus className="text-blue-600" size={28} />
               </div>
@@ -183,11 +195,11 @@ function Home() {
               </h3>
 
               <p className="text-gray-500 text-sm">{t("create_acc_desc")}</p>
-            </div>
+            </motion.div>
 
             {/* STEP 2 */}
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-8">
               <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-indigo-100">
                 <PlayCircle className="text-indigo-600" size={28} />
               </div>
@@ -203,11 +215,11 @@ function Home() {
               <p className="text-gray-500 text-sm">
                 {t("start_learning_desc")}
               </p>
-            </div>
+            </motion.div>
 
             {/* STEP 3 */}
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-8">
               <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-purple-100">
                 <Award className="text-purple-600" size={28} />
               </div>
@@ -221,11 +233,11 @@ function Home() {
               </h3>
 
               <p className="text-gray-500 text-sm">{t("build_skills_desc")}</p>
-            </div>
+            </motion.div>
 
             {/* STEP 4 */}
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-8">
               <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-green-100">
                 <Briefcase className="text-green-600" size={28} />
               </div>
@@ -239,8 +251,8 @@ function Home() {
               </h3>
 
               <p className="text-gray-500 text-sm">{t("career_opp_desc")}</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -256,10 +268,16 @@ function Home() {
             {t("impact_desc")}
           </p>
 
-          <div className="grid md:grid-cols-3 gap-10">
+          <motion.div
+            className="grid md:grid-cols-3 gap-10"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.18 }}
+          >
             {/* STUDENTS */}
 
-            <div className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-10">
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-100">
                 <Users className="text-blue-600" size={30} />
               </div>
@@ -267,11 +285,11 @@ function Home() {
               <h3 className="text-4xl font-bold text-gray-800 mb-2">1,000+</h3>
 
               <p className="text-gray-500 font-medium">{t("students")}</p>
-            </div>
+            </motion.div>
 
             {/* LESSONS */}
 
-            <div className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-10">
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-indigo-100">
                 <BookOpen className="text-indigo-600" size={30} />
               </div>
@@ -279,11 +297,11 @@ function Home() {
               <h3 className="text-4xl font-bold text-gray-800 mb-2">100+</h3>
 
               <p className="text-gray-500 font-medium">{t("lessons")}</p>
-            </div>
+            </motion.div>
 
             {/* COURSES */}
 
-            <div className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2">
+            <motion.div variants={fadeUp} className="gyano-card p-10">
               <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-purple-100">
                 <Trophy className="text-purple-600" size={30} />
               </div>
@@ -291,8 +309,8 @@ function Home() {
               <h3 className="text-4xl font-bold text-gray-800 mb-2">20+</h3>
 
               <p className="text-gray-500 font-medium">{t("courses")}</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -308,7 +326,13 @@ function Home() {
             {t("category_desc")}
           </p>
 
-          <div className="grid md:grid-cols-3 gap-10">
+          <motion.div
+            className="grid md:grid-cols-3 gap-10"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.18 }}
+          >
             {[
               { icon: Code, title: "Web Development", color: "blue" },
               {
@@ -324,9 +348,10 @@ function Home() {
               const Icon = item.icon;
 
               return (
-                <div
+                <motion.div
                   key={i}
-                  className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2 cursor-pointer"
+                  variants={fadeUp}
+                  className="gyano-card p-10 cursor-pointer"
                 >
                   {/* ICON */}
 
@@ -339,10 +364,10 @@ function Home() {
                   <h3 className="text-lg font-semibold text-gray-800">
                     {item.title}
                   </h3>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -358,14 +383,21 @@ function Home() {
             {t("popular_courses_desc")}
           </p>
 
-          <div className="grid md:grid-cols-3 gap-10">
+          <motion.div
+            className="grid md:grid-cols-3 gap-10"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.18 }}
+          >
             {courses
               .sort((a: any, b: any) => (b.students || 0) - (a.students || 0))
               .slice(0, 3)
               .map((course: any) => (
-                <div
+                <motion.div
                   key={course.id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2 overflow-hidden"
+                  variants={fadeUp}
+                  className="gyano-card overflow-hidden"
                 >
                   {/* COURSE IMAGE */}
 
@@ -390,22 +422,22 @@ function Home() {
                     <div className="flex gap-3">
                       <button
                         onClick={() => navigate("/login")}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg w-full hover:bg-green-700 transition"
+                        className="gyano-button bg-green-600 text-white px-4 py-2 rounded-lg w-full hover:bg-green-700 transition"
                       >
                         Enroll
                       </button>
 
                       <button
                         onClick={() => navigate(`/course/${course.id}`)}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-700 transition"
+                        className="gyano-button bg-blue-600 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-700 transition"
                       >
                         View
                       </button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -421,7 +453,13 @@ function Home() {
             {t("sucess_stories_desc")}
           </p>
 
-          <div className="grid md:grid-cols-3 gap-10">
+          <motion.div
+            className="grid md:grid-cols-3 gap-10"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.18 }}
+          >
             {[
               {
                 name: "Aman",
@@ -438,9 +476,10 @@ function Home() {
                 story: "This platform opened new career opportunities for me.",
               },
             ].map((s, i) => (
-              <div
+              <motion.div
                 key={i}
-                className="bg-white p-10 rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-2"
+                variants={fadeUp}
+                className="gyano-card p-10"
               >
                 {/* STORY */}
 
@@ -455,9 +494,9 @@ function Home() {
 
                   <h4 className="font-semibold text-gray-800">{s.name}</h4>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -490,14 +529,14 @@ function Home() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
               <button
                 onClick={() => navigate("/register")}
-                className="w-full sm:w-auto bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md"
+                className="gyano-button w-full sm:w-auto bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md"
               >
                 {t("CTA_btn")}
               </button>
 
               <button
                 onClick={() => navigate("/register")}
-                className="w-full sm:w-auto border border-gray-300 px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-100 transition"
+                className="gyano-button w-full sm:w-auto border border-gray-300 px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-100 transition"
               >
                 {t("CTA_btn2")}
               </button>
@@ -506,7 +545,7 @@ function Home() {
 
           {/* RIGHT IMAGE */}
           <div className="flex justify-center">
-            <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-2xl shadow-md">
+            <div className="gyano-card p-3 sm:p-4 lg:p-6">
               <motion.img
                 src={CTC}
                 className="rounded-xl w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg"

@@ -6,15 +6,18 @@ import {
   Layers,
   ClipboardList,
   LogOut,
+  UserRound,
   Trophy,
   ShieldCheck,
   UserPlus,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
   const role = localStorage.getItem("role");
   const navigate = useNavigate();
   const location = useLocation();
+  const showLabel = open || mobileOpen;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -31,15 +34,25 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
       <Link
         to={path}
         onClick={() => setMobileOpen(false)}
-        className={`flex items-center gap-3 px-4 py-2 rounded-lg transition text-sm font-medium
+        className={`relative flex items-center gap-3 px-4 py-2.5 rounded-lg transition text-sm font-medium overflow-hidden
         ${
           active
-            ? "bg-blue-100 text-blue-600"
+            ? "text-blue-600"
             : "text-gray-600 hover:bg-gray-100"
-        }`}
+        }
+        ${showLabel ? "" : "justify-center"}`}
+        aria-label={label}
+        title={showLabel ? undefined : label}
       >
-        <Icon size={18} />
-        {open && label}
+        {active && (
+          <motion.span
+            layoutId="sidebar-active"
+            className="absolute inset-0 rounded-lg bg-blue-100"
+            transition={{ type: "spring", stiffness: 420, damping: 34 }}
+          />
+        )}
+        <Icon className="relative z-10" size={18} />
+        {showLabel && <span className="relative z-10 truncate">{label}</span>}
       </Link>
     );
   };
@@ -54,12 +67,13 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
       )}
 
       <div
-        className={`fixed lg:static top-0 left-0 h-full bg-white border-r flex flex-col z-50 transition-all duration-300
-        ${open ? "w-64" : "w-20"}
+        className={`fixed inset-y-0 left-0 h-screen max-h-screen w-72 bg-white/90 backdrop-blur-xl border-r flex flex-col z-50 transition-all duration-300 shadow-xl shadow-blue-950/5
+        ${open ? "lg:w-64" : "lg:w-20"}
         ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
       >
-        <div className="flex flex-col gap-2 p-4 flex-1 mt-6">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 pt-8">
+          <div className="flex flex-col gap-2">
           {role === "admin" && (
             <>
               {navItem("/admin", "Admin Panel", ShieldCheck)}
@@ -75,6 +89,7 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
               {navItem("/teacher/quiz", "Quiz", ClipboardList)}
               {navItem("/teacher-analytics", "Analytics", BarChart3)}
               {navItem("/leaderboard", "Leaderboard", Trophy)}
+              {navItem("/profile", "Profile", UserRound)}
             </>
           )}
 
@@ -85,17 +100,23 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
               {navItem("/progress", "Progress", BarChart3)}
               {navItem("/analytics", "Analytics", BarChart3)}
               {navItem("/leaderboard", "Leaderboard", Trophy)}
+              {navItem("/profile", "Profile", UserRound)}
             </>
           )}
+          </div>
         </div>
 
-        <div className="border-t p-4">
+        <div className="mt-auto shrink-0 border-t bg-white/80 p-4 backdrop-blur">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-2 rounded-lg text-red-500 hover:bg-red-50"
+            className={`gyano-button flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-red-500 hover:bg-red-50 ${
+              showLabel ? "" : "justify-center"
+            }`}
+            aria-label="Logout"
+            title={showLabel ? undefined : "Logout"}
           >
             <LogOut size={18} />
-            {open && "Logout"}
+            {showLabel && <span className="truncate">Logout</span>}
           </button>
         </div>
       </div>
