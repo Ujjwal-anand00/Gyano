@@ -3,8 +3,8 @@ const pool = require("./db");
 
 // const seedAdminUser = async () => {
 //   const adminName = process.env.ADMIN_NAME || "Gyano Admin";
-//   const adminEmail = process.env.ADMIN_EMAIL || "admin@gyano.com";
-//   const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123";
+//   const adminEmail = process.env.ADMIN_EMAIL;
+//   const adminPassword = process.env.ADMIN_PASSWORD;
 
 //   const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
