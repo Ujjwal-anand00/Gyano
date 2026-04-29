@@ -1,27 +1,27 @@
 const bcrypt = require("bcryptjs");
 const pool = require("./db");
 
-const seedAdminUser = async () => {
-  const adminName = process.env.ADMIN_NAME || "Gyano Admin";
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@gyano.com";
-  const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123";
+// const seedAdminUser = async () => {
+//   const adminName = process.env.ADMIN_NAME || "Gyano Admin";
+//   const adminEmail = process.env.ADMIN_EMAIL || "admin@gyano.com";
+//   const adminPassword = process.env.ADMIN_PASSWORD || "Admin@123";
 
-  const hashedPassword = await bcrypt.hash(adminPassword, 10);
+//   const hashedPassword = await bcrypt.hash(adminPassword, 10);
 
-  await pool.query(
-    `
-    INSERT INTO users (name, email, password, role, created_by)
-    VALUES ($1, $2, $3, 'admin', NULL)
-    ON CONFLICT (email)
-    DO UPDATE SET
-      name = EXCLUDED.name,
-      password = EXCLUDED.password,
-      role = 'admin',
-      created_by = NULL
-    `,
-    [adminName, adminEmail, hashedPassword]
-  );
-};
+//   await pool.query(
+//     `
+//     INSERT INTO users (name, email, password, role, created_by)
+//     VALUES ($1, $2, $3, 'admin', NULL)
+//     ON CONFLICT (email)
+//     DO UPDATE SET
+//       name = EXCLUDED.name,
+//       password = EXCLUDED.password,
+//       role = 'admin',
+//       created_by = NULL
+//     `,
+//     [adminName, adminEmail, hashedPassword]
+//   );
+// };
 
 const initDB = async () => {
   try {
@@ -153,10 +153,10 @@ const initDB = async () => {
 
     `);
 
-    await seedAdminUser();
+    // await seedAdminUser();
 
     console.log("PostgreSQL tables created successfully");
-    console.log("Admin user seeded successfully");
+    // console.log("Admin user seeded successfully");
   } catch (err) {
     console.error("DB Init Error:", err);
   }
