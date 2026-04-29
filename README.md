@@ -39,7 +39,7 @@ Gyano is a full-stack digital learning platform where teachers can create course
 **Backend**
 - Node.js
 - Express.js
-- SQLite
+- PostgreSQL
 
 **Other Tools**
 - JWT Authentication
