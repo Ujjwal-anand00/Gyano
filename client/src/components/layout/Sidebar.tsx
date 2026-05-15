@@ -34,11 +34,11 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
       <Link
         to={path}
         onClick={() => setMobileOpen(false)}
-        className={`relative flex items-center gap-3 px-4 py-2.5 rounded-lg transition text-sm font-medium overflow-hidden
+        className={`relative flex items-center gap-3 overflow-hidden rounded-2xl px-4 py-2.5 text-sm font-medium transition
         ${
           active
-            ? "text-blue-600"
-            : "text-gray-600 hover:bg-gray-100"
+            ? "text-primary"
+            : "text-muted-foreground hover:bg-slate-100/80 hover:text-foreground dark:hover:bg-white/8"
         }
         ${showLabel ? "" : "justify-center"}`}
         aria-label={label}
@@ -47,7 +47,7 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
         {active && (
           <motion.span
             layoutId="sidebar-active"
-            className="absolute inset-0 rounded-lg bg-blue-100"
+            className="absolute inset-0 rounded-2xl bg-primary/10"
             transition={{ type: "spring", stiffness: 420, damping: 34 }}
           />
         )}
@@ -67,12 +67,12 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
       )}
 
       <div
-        className={`fixed inset-y-0 left-0 h-screen max-h-screen w-72 bg-white/90 backdrop-blur-xl border-r flex flex-col z-50 transition-all duration-300 shadow-xl shadow-blue-950/5
+        className={`fixed inset-y-0 left-0 z-50 flex h-screen max-h-screen w-72 flex-col border-r border-border bg-white/82 shadow-2xl shadow-slate-950/10 backdrop-blur-2xl transition-all duration-300 dark:bg-slate-950/82 dark:shadow-black/40
         ${open ? "lg:w-64" : "lg:w-20"}
         ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
       >
-        <div className="flex-1 min-h-0 overflow-y-auto p-4 pt-8">
+        <div className="min-h-0 flex-1 overflow-y-auto p-4 pt-8">
           <div className="flex flex-col gap-2">
           {role === "admin" && (
             <>
@@ -106,10 +106,10 @@ function Sidebar({ open, mobileOpen, setMobileOpen }: any) {
           </div>
         </div>
 
-        <div className="mt-auto shrink-0 border-t bg-white/80 p-4 backdrop-blur">
+        <div className="mt-auto shrink-0 border-t border-border bg-white/70 p-4 backdrop-blur dark:bg-white/5">
           <button
             onClick={handleLogout}
-            className={`gyano-button flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-red-500 hover:bg-red-50 ${
+            className={`gyano-button flex w-full items-center gap-3 rounded-2xl px-4 py-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 ${
               showLabel ? "" : "justify-center"
             }`}
             aria-label="Logout"

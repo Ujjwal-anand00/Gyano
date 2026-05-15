@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, Sparkles, User } from "lucide-react";
+import { motion } from "framer-motion";
 import api from "../services/api";
 import Logo from "../assets/Gyano.png";
 import Hero from "../assets/Hero.png";
+import ThemeToggle from "../components/ThemeToggle";
 
 function Register() {
   const navigate = useNavigate();
@@ -14,6 +16,15 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const passwordStrength = useMemo(() => {
+    let score = 0;
+    if (password.length >= 6) score += 1;
+    if (/[A-Z]/.test(password)) score += 1;
+    if (/[0-9]/.test(password)) score += 1;
+    if (/[^A-Za-z0-9]/.test(password)) score += 1;
+    return score;
+  }, [password]);
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
@@ -45,109 +56,151 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex">
-      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-indigo-400 to-blue-300 text-white items-center justify-center p-12">
-        <div className="max-w-md">
-          <h1 className="text-4xl font-bold mb-4">
+    <main className="gyano-page-shell grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
+      <section className="relative hidden overflow-hidden bg-slate-950 p-10 text-white lg:flex lg:items-center">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_14%,rgba(20,184,166,0.34),transparent_28rem),radial-gradient(circle_at_86%_12%,rgba(99,102,241,0.36),transparent_24rem)]" />
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative z-10 mx-auto max-w-xl"
+        >
+          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-sm text-white/80 backdrop-blur">
+            <Sparkles size={14} />
+            Start your learning journey
+          </div>
+          <h1 className="text-5xl font-bold leading-tight">
             Join{" "}
-            <span>
-              <img src={Logo} className="h-10 inline" />
-            </span>{" "}
-            and start learning today!
+            <img src={Logo} alt="Gyano" className="inline h-12 w-auto align-[-0.55rem]" />{" "}
+            today
           </h1>
-
-          <img src={Hero} className="w-auto mx-auto mb-4" />
-
-          <p className="text-indigo-100 text-lg">
+          <p className="mt-5 text-lg leading-8 text-slate-300">
             Start your learning journey today. Track progress, earn
             certificates, and build new skills.
           </p>
+          <div className="mt-10 rounded-[2rem] border border-white/10 bg-white/8 p-4 shadow-2xl shadow-blue-950/40 backdrop-blur">
+            <img src={Hero} alt="Gyano learning preview" className="mx-auto rounded-3xl" />
+          </div>
+        </motion.div>
+      </section>
+
+      <section className="relative flex items-center justify-center px-4 py-10 sm:px-6">
+        <div className="absolute right-4 top-4">
+          <ThemeToggle />
         </div>
-      </div>
 
-      <div className="flex flex-1 items-center justify-center bg-gray-50">
-        <div className="bg-white p-10 rounded-2xl shadow-xl w-[380px]">
-          <div className="flex items-center justify-center mb-6">
-            <img src={Logo} className="h-10 w-auto " />
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <div className="mb-8 flex justify-center">
+            <img src={Logo} alt="Gyano" className="h-12 w-auto" />
           </div>
 
-          <p className="text-center text-gray-500 mb-2">Create your account</p>
+          <div className="gyano-glass-card p-6 sm:p-8">
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl font-bold">Create your account</h2>
+              <p className="mt-2 text-muted-foreground">
+                Build skills with a focused learning workspace.
+              </p>
+            </div>
 
-          <div className="relative mb-4">
-            <User size={18} className="absolute left-3 top-3 text-gray-400" />
+            <div className="grid gap-4">
+              <label className="relative block">
+                <User size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Full name"
+                  autoComplete="name"
+                  className="gyano-input pl-11"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </label>
 
-            <input
-              type="text"
-              placeholder="Full name"
-              className="w-full border rounded-lg pl-10 pr-3 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-              onChange={(e) => setName(e.target.value)}
-            />
+              <label className="relative block">
+                <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  autoComplete="email"
+                  className="gyano-input pl-11"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </label>
+
+              <label className="relative block">
+                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  autoComplete="new-password"
+                  className="gyano-input pl-11 pr-12"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+                  onClick={() => setShowPassword((current) => !current)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </label>
+
+              {password && (
+                <div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[0, 1, 2, 3].map((bar) => (
+                      <span
+                        key={bar}
+                        className={`h-1.5 rounded-full transition ${
+                          passwordStrength > bar
+                            ? "bg-gradient-to-r from-blue-600 to-emerald-500"
+                            : "bg-muted"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Add length, numbers, capitals, and symbols for a stronger password.
+                  </p>
+                </div>
+              )}
+
+              <label className="relative block">
+                <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="password"
+                  placeholder="Confirm password"
+                  autoComplete="new-password"
+                  className="gyano-input pl-11"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+              </label>
+
+              <button
+                onClick={handleRegister}
+                disabled={loading}
+                className="gyano-primary-button mt-2 w-full"
+              >
+                {loading ? "Creating account..." : "Register"}
+              </button>
+            </div>
+
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+              Already have an account?
+              <Link to="/login" className="ml-1 font-semibold text-primary hover:underline">
+                Login
+              </Link>
+            </p>
           </div>
-
-          <div className="relative mb-4">
-            <Mail size={18} className="absolute left-3 top-3 text-gray-400" />
-
-            <input
-              type="email"
-              placeholder="Email address"
-              className="w-full border rounded-lg pl-10 pr-3 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-
-          <div className="relative mb-4">
-            <Lock size={18} className="absolute left-3 top-3 text-gray-400" />
-
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className="w-full border rounded-lg pl-10 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-
-            <button
-              type="button"
-              className="absolute right-3 top-3 text-gray-400"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-
-          <div className="relative mb-6">
-            <Lock size={18} className="absolute left-3 top-3 text-gray-400" />
-
-            <input
-              type="password"
-              placeholder="Confirm password"
-              className="w-full border rounded-lg pl-10 pr-3 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-
-          <button
-            onClick={handleRegister}
-            className="bg-indigo-600 text-white w-full py-3 rounded-lg font-medium hover:bg-indigo-700 transition flex items-center justify-center"
-          >
-            {loading ? (
-              <span className="animate-pulse">Creating account...</span>
-            ) : (
-              "Register"
-            )}
-          </button>
-
-          <p className="text-center mt-6 text-gray-500">
-            Already have an account?
-            <Link
-              to="/login"
-              className="text-indigo-600 ml-1 font-medium hover:underline"
-            >
-              Login
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </section>
+    </main>
   );
 }
 

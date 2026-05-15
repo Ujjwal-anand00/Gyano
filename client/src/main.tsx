@@ -5,12 +5,15 @@ import "./index.css"
 import "./i18n/i18n"
 
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { ThemeProvider } from "./components/ThemeProvider"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <TooltipProvider>
-      <App />
-    </TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <App />
+      </TooltipProvider>
+    </ThemeProvider>
   </React.StrictMode>
 )
 

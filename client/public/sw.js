@@ -1,4 +1,4 @@
-const CACHE_NAME = "gyano-v3"; 
+const CACHE_NAME = "gyano-v4"; 
 
 const urlsToCache = ["/", "/index.html", "/manifest.json"];
 

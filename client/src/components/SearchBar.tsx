@@ -89,8 +89,8 @@ function SearchBar() {
 
   return (
     <div ref={wrapperRef} className="relative w-full max-w-2xl">
-      <div className="flex items-center gap-3 rounded-2xl border border-white/70 bg-white/90 px-4 py-3 shadow-lg shadow-blue-950/5 backdrop-blur transition focus-within:border-blue-300 focus-within:ring-4 focus-within:ring-blue-100">
-        <Search className="text-gray-400" size={18} />
+      <div className="flex items-center gap-3 rounded-3xl border border-border bg-white/80 px-4 py-3 shadow-xl shadow-slate-950/5 backdrop-blur transition focus-within:border-primary/50 focus-within:ring-4 focus-within:ring-primary/15 dark:bg-white/6">
+        <Search className="text-muted-foreground" size={18} />
         <input
           value={query}
           onChange={(e) => {
@@ -99,7 +99,7 @@ function SearchBar() {
           }}
           onFocus={() => setOpen(true)}
           placeholder="Search courses and lessons..."
-          className="w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+          className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
         />
         {loading && <Loader2 className="animate-spin text-blue-500" size={18} />}
       </div>
@@ -108,20 +108,20 @@ function SearchBar() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute left-0 right-0 top-14 z-40 max-h-80 overflow-y-auto rounded-2xl border border-gray-100 bg-white shadow-2xl shadow-blue-950/10"
+          className="absolute left-0 right-0 top-14 z-40 max-h-80 overflow-y-auto rounded-3xl border border-border bg-white/95 shadow-2xl shadow-slate-950/10 backdrop-blur dark:bg-slate-950/95"
         >
           {results.length > 0 ? (
             results.map((result) => (
               <button
                 key={`${result.type}-${result.id}`}
                 onClick={() => handleResultClick(result)}
-                className="flex w-full items-center justify-between gap-4 border-b border-gray-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-blue-50"
+                className="flex w-full items-center justify-between gap-4 border-b border-border px-4 py-3 text-left transition last:border-b-0 hover:bg-primary/8"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-gray-800">
+                  <p className="truncate text-sm font-semibold text-foreground">
                     {result.title}
                   </p>
-                  <p className="truncate text-xs text-gray-500">
+                  <p className="truncate text-xs text-muted-foreground">
                     {result.description || result.subject || "Open result"}
                   </p>
                 </div>

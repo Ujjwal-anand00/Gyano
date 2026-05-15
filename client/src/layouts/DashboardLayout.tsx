@@ -8,7 +8,7 @@ function DashboardLayout({ children }: any) {
   const [mobileOpen, setMobileOpen] = useState(false); // mobile sidebar
 
   return (
-    <div className="flex gyano-page-shell">
+    <div className="gyano-page-shell flex">
       
       {/* SIDEBAR */}
       <Sidebar
@@ -19,7 +19,7 @@ function DashboardLayout({ children }: any) {
 
       {/* MAIN AREA */}
       <div
-        className={`relative z-10 flex-1 flex flex-col bg-gray-50/90 min-h-screen transition-[margin] duration-300 ${
+        className={`relative z-10 flex min-h-screen flex-1 flex-col bg-background/90 transition-[margin] duration-300 ${
           open ? "lg:ml-64" : "lg:ml-20"
         }`}
       >
@@ -29,7 +29,7 @@ function DashboardLayout({ children }: any) {
 
         {/* CONTENT */}
         <motion.div
-          className="p-4 sm:p-6 lg:p-8"
+          className="w-full p-4 sm:p-6 lg:p-8"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: "easeOut" }}

@@ -96,9 +96,9 @@ function StudentDashboard() {
       {/* HEADER */}
 
       <div className="mb-10">
-        <h1 className="text-3xl font-bold">Welcome Back 👋</h1>
+        <h1 className="gyano-dashboard-heading">Welcome Back</h1>
 
-        <p className="text-gray-500">
+        <p className="gyano-muted">
           Continue learning and explore new courses.
         </p>
       </div>
@@ -156,9 +156,9 @@ function StudentDashboard() {
       <div className="mb-10 flex justify-end">
         <button
           onClick={() => navigate("/ai-notes")}
-          className="gyano-button bg-yellow-500 hover:bg-yellow-600 text-black px-5 py-2 rounded-lg shadow"
+          className="gyano-secondary-button px-5 py-2.5"
         >
-          📄 View AI Notes
+          View AI Notes
         </button>
       </div>
 

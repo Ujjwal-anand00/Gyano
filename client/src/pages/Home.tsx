@@ -1,19 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  Users,
+  ArrowRight,
+  Award,
   BookOpen,
-  Trophy,
-  Code,
   Brain,
-  Shield,
+  Briefcase,
+  CheckCircle2,
+  Code,
   Database,
   Globe,
-  UserPlus,
   PlayCircle,
-  Award,
-  Briefcase,
+  Shield,
+  Sparkles,
+  Trophy,
+  UserPlus,
+  Users,
 } from "lucide-react";
 
 import api from "../services/api";
@@ -25,345 +28,212 @@ import AnimatedWrapper, {
   fadeUp,
   staggerContainer,
 } from "../components/AnimatedWrapper";
+import Footer from "./Footer";
+
+const categories = [
+  { icon: Code, title: "Web Development", tone: "from-blue-500 to-cyan-400" },
+  { icon: Brain, title: "Artificial Intelligence", tone: "from-fuchsia-500 to-violet-500" },
+  { icon: Database, title: "Data Science", tone: "from-indigo-500 to-blue-500" },
+  { icon: Shield, title: "Cyber Security", tone: "from-emerald-500 to-teal-400" },
+  { icon: Globe, title: "Cloud Computing", tone: "from-sky-500 to-blue-500" },
+  { icon: BookOpen, title: "Programming", tone: "from-amber-500 to-rose-400" },
+];
+
+const steps = [
+  { icon: UserPlus, titleKey: "create_acc", descKey: "create_acc_desc" },
+  { icon: PlayCircle, titleKey: "start_learning", descKey: "start_learning_desc" },
+  { icon: Award, titleKey: "build_skills", descKey: "build_skills_desc" },
+  { icon: Briefcase, titleKey: "career_opp", descKey: "career_opp_desc" },
+];
+
+const successStories = [
+  {
+    name: "Aman",
+    achievement: "Frontend Developer",
+    story:
+      "Got a frontend internship after building React dashboards, portfolio projects, and a clean GitHub profile.",
+    Icon: Code,
+    accent: "from-sky-500 to-cyan-400",
+  },
+  {
+    name: "Priya",
+    achievement: "Career Switch",
+    story:
+      "Moved from a non-tech background into software development with structured lessons and guided practice.",
+    Icon: Sparkles,
+    accent: "from-violet-500 to-fuchsia-400",
+  },
+  {
+    name: "Rahul",
+    achievement: "Confidence Builder",
+    story:
+      "Built real-world projects, practiced interviews, and gained the confidence to explain his work clearly.",
+    Icon: Trophy,
+    accent: "from-amber-500 to-rose-400",
+  },
+];
+
+const ctaStats = [
+  { value: "100+", label: "Students" },
+  { value: "20+", label: "Courses" },
+  { value: "95%", label: "Success Rate" },
+];
+
+const trustSignals = [
+  "Project-first learning",
+  "Career-ready paths",
+  "Community support",
+];
 
 function Home() {
   const navigate = useNavigate();
   const [courses, setCourses] = useState<any[]>([]);
   const { t } = useTranslation();
 
-  const [popularCourses, setPopularCourses] = useState([]);
-
   useEffect(() => {
-    api.get("/api/courses/popular").then((res) => {
-      setPopularCourses(res.data);
-    });
-  }, []);
+    let mounted = true;
 
-  useEffect(() => {
     api.get("/api/courses").then((res) => {
-      setCourses(res.data);
+      if (mounted) setCourses(res.data);
     });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  const featuredCourses = useMemo(
+    () =>
+      [...courses]
+        .sort((a: any, b: any) => (b.students || 0) - (a.students || 0))
+        .slice(0, 3),
+    [courses],
+  );
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0, y: 12 }}
-      transition={{ duration: 0.6 }}
-      className="gyano-page-shell min-h-screen bg-gray-50"
+      transition={{ duration: 0.45 }}
+      className="gyano-page-shell"
     >
-      {/* NAVBAR */}
-
       <Nav />
 
-      {/* HERO SECTION */}
-
-      <section className="gyano-section py-28 px-6 sm:px-10 bg-gradient-to-br from-blue-600 via-indigo-500 to-blue-400 text-white">
-        <div className="relative z-10 max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-          <AnimatedWrapper>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+      <section className="relative overflow-hidden px-4 pb-14 pt-12 sm:px-6 lg:px-8 lg:pb-20 lg:pt-16">
+        <div className="absolute inset-x-0 top-0 h-[34rem] bg-[radial-gradient(circle_at_20%_0%,rgba(37,99,235,0.2),transparent_28rem),radial-gradient(circle_at_82%_12%,rgba(20,184,166,0.18),transparent_26rem)]" />
+        <div className="gyano-container relative z-10 grid gap-12 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
+          <AnimatedWrapper className="max-w-3xl">
+            <h1 className="text-balance text-5xl font-bold leading-[1.02] tracking-tight text-foreground sm:text-6xl lg:text-7xl">
               {t("hero_title")}
             </h1>
-
-            <p className="italic text-yellow-300 mb-3">
-              "विद्या ददाति विनयं, विनयाद् याति पात्रताम्। पात्रत्वात्<br></br>
-              धनमाप्नोति, धनात् धर्मं ततः सुखम्॥"
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+              {t("hero_quote")}
+            </p>
+            <p className="mt-4 max-w-xl rounded-3xl border border-border bg-white/60 p-4 text-sm italic text-muted-foreground backdrop-blur dark:bg-white/6">
+              "Vidya dadati vinayam, vinayad yati patratam."
             </p>
 
-            <p className="text-indigo-100 mb-8 max-w-lg">{t("hero_quote")}</p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
                 onClick={() => navigate("/register")}
-                className="gyano-button bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition shadow-lg"
+                className="gyano-primary-button"
               >
                 {t("start_learning")}
+                <ArrowRight size={18} />
               </button>
-
               <button
                 onClick={() => navigate("/login")}
-                className="gyano-button border border-white px-8 py-3 rounded-lg hover:bg-white hover:text-blue-600 transition"
+                className="gyano-secondary-button"
               >
                 {t("browse_courses")}
               </button>
             </div>
+
+            <div className="mt-10 grid grid-cols-3 gap-3 sm:max-w-xl">
+              {[
+                ["1,00+", t("students")],
+                ["50+", t("lessons")],
+                ["10+", t("courses")],
+              ].map(([value, label]) => (
+                <div key={String(label)} className="gyano-glass-card p-4">
+                  <p className="text-2xl font-bold">{value}</p>
+                  <p className="mt-1 text-xs font-medium text-muted-foreground">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
           </AnimatedWrapper>
 
-          <AnimatedWrapper delay={0.15} className="flex justify-center">
-            <CodeBlock />
+          <AnimatedWrapper delay={0.12} className="relative">
+            <div className="gyano-glass-card overflow-hidden p-3">
+              <CodeBlock />
+            </div>
           </AnimatedWrapper>
         </div>
       </section>
 
-      {/* RURAL IMPACT */}
-
-      <section className="py-28 px-10 bg-gradient-to-b from-blue-50 to-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">
-            {t("bridging")}
-          </h2>
-
-          <p className="max-w-3xl mx-auto text-gray-600 text-lg mb-16">
-            {t("bridging_desc")}
-          </p>
-
+      <section className="gyano-section">
+        <div className="gyano-container text-center">
+          <span className="gyano-kicker">Mission</span>
+          <h2 className="gyano-heading">{t("bridging")}</h2>
+          <p className="gyano-subtitle">{t("bridging_desc")}</p>
           <motion.div
-            className="grid md:grid-cols-3 gap-10"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.18 }}
-          >
-            {/* CARD 1 */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-10">
-              <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-100">
-                <BookOpen className="text-blue-600" />
-              </div>
-
-              <h3 className="text-xl font-semibold mb-3">
-                {t("accessible_learning")}
-              </h3>
-
-              <p className="text-gray-600">{t("accessible_learning_desc")}</p>
-            </motion.div>
-
-            {/* CARD 2 */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-10">
-              <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-purple-100">
-                <Code className="text-purple-600" />
-              </div>
-
-              <h3 className="text-xl font-semibold mb-3">
-                {t("digital_skills")}
-              </h3>
-
-              <p className="text-gray-600">{t("digital_skills_desc")}</p>
-            </motion.div>
-
-            {/* CARD 3 */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-10">
-              <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-green-100">
-                <Users className="text-green-600" />
-              </div>
-
-              <h3 className="text-xl font-semibold mb-3">
-                {t("empowering_youth")}
-              </h3>
-
-              <p className="text-gray-600">{t("empowering_youth_desc")}</p>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-
-      <section className="py-28 px-10 bg-gradient-to-b from-blue-50 to-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">
-            {t("gyano_works")}
-          </h2>
-
-          <p className="text-gray-600 max-w-2xl mx-auto mb-16 text-lg">
-            {t("gyano_works_desc")}
-          </p>
-
-          <motion.div
-            className="grid md:grid-cols-4 gap-10"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.18 }}
-          >
-            {/* STEP 1 */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-8">
-              <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-100">
-                <UserPlus className="text-blue-600" size={28} />
-              </div>
-
-              <span className="text-sm text-blue-600 font-semibold">
-                Step 1
-              </span>
-
-              <h3 className="text-lg font-semibold mt-2 mb-3">
-                {t("create_acc")}
-              </h3>
-
-              <p className="text-gray-500 text-sm">{t("create_acc_desc")}</p>
-            </motion.div>
-
-            {/* STEP 2 */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-8">
-              <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-indigo-100">
-                <PlayCircle className="text-indigo-600" size={28} />
-              </div>
-
-              <span className="text-sm text-indigo-600 font-semibold">
-                Step 2
-              </span>
-
-              <h3 className="text-lg font-semibold mt-2 mb-3">
-                {t("start_learning")}
-              </h3>
-
-              <p className="text-gray-500 text-sm">
-                {t("start_learning_desc")}
-              </p>
-            </motion.div>
-
-            {/* STEP 3 */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-8">
-              <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-purple-100">
-                <Award className="text-purple-600" size={28} />
-              </div>
-
-              <span className="text-sm text-purple-600 font-semibold">
-                Step 3
-              </span>
-
-              <h3 className="text-lg font-semibold mt-2 mb-3">
-                {t("build_skills")}
-              </h3>
-
-              <p className="text-gray-500 text-sm">{t("build_skills_desc")}</p>
-            </motion.div>
-
-            {/* STEP 4 */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-8">
-              <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-full bg-green-100">
-                <Briefcase className="text-green-600" size={28} />
-              </div>
-
-              <span className="text-sm text-green-600 font-semibold">
-                Step 4
-              </span>
-
-              <h3 className="text-lg font-semibold mt-2 mb-3">
-                {t("career_opp")}
-              </h3>
-
-              <p className="text-gray-500 text-sm">{t("career_opp_desc")}</p>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* STATS */}
-
-      <section className="py-24 px-10 bg-gradient-to-b from-blue-50 to-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">
-            {t("impact")}
-          </h2>
-
-          <p className="text-gray-600 max-w-2xl mx-auto mb-16">
-            {t("impact_desc")}
-          </p>
-
-          <motion.div
-            className="grid md:grid-cols-3 gap-10"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.18 }}
-          >
-            {/* STUDENTS */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-10">
-              <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-100">
-                <Users className="text-blue-600" size={30} />
-              </div>
-
-              <h3 className="text-4xl font-bold text-gray-800 mb-2">1,000+</h3>
-
-              <p className="text-gray-500 font-medium">{t("students")}</p>
-            </motion.div>
-
-            {/* LESSONS */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-10">
-              <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-indigo-100">
-                <BookOpen className="text-indigo-600" size={30} />
-              </div>
-
-              <h3 className="text-4xl font-bold text-gray-800 mb-2">100+</h3>
-
-              <p className="text-gray-500 font-medium">{t("lessons")}</p>
-            </motion.div>
-
-            {/* COURSES */}
-
-            <motion.div variants={fadeUp} className="gyano-card p-10">
-              <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-purple-100">
-                <Trophy className="text-purple-600" size={30} />
-              </div>
-
-              <h3 className="text-4xl font-bold text-gray-800 mb-2">20+</h3>
-
-              <p className="text-gray-500 font-medium">{t("courses")}</p>
-            </motion.div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CATEGORIES */}
-
-      <section className="py-28 px-10 bg-gradient-to-b from-blue-50 to-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            {t("categories")}
-          </h2>
-
-          <p className="text-gray-600 max-w-2xl mx-auto mb-16">
-            {t("category_desc")}
-          </p>
-
-          <motion.div
-            className="grid md:grid-cols-3 gap-10"
+            className="mt-14 grid gap-6 md:grid-cols-3"
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.18 }}
           >
             {[
-              { icon: Code, title: "Web Development", color: "blue" },
-              {
-                icon: Brain,
-                title: "Artificial Intelligence",
-                color: "purple",
-              },
-              { icon: Database, title: "Data Science", color: "indigo" },
-              { icon: Shield, title: "Cyber Security", color: "green" },
-              { icon: Globe, title: "Cloud Computing", color: "cyan" },
-              { icon: BookOpen, title: "Programming", color: "orange" },
-            ].map((item, i) => {
-              const Icon = item.icon;
+              [BookOpen, t("accessible_learning"), t("accessible_learning_desc")],
+              [Code, t("digital_skills"), t("digital_skills_desc")],
+              [Users, t("empowering_youth"), t("empowering_youth_desc")],
+            ].map(([Icon, title, desc]: any) => (
+              <motion.div key={title} variants={fadeUp} className="gyano-card p-8 text-left">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <Icon />
+                </div>
+                <h3 className="text-xl font-semibold">{title}</h3>
+                <p className="mt-3 leading-7 text-muted-foreground">{desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
 
+      <section className="gyano-section">
+        <div className="gyano-container">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="gyano-kicker">Learning System</span>
+            <h2 className="gyano-heading">{t("gyano_works")}</h2>
+            <p className="gyano-subtitle">{t("gyano_works_desc")}</p>
+          </div>
+
+          <motion.div
+            className="mt-14 grid gap-5 md:grid-cols-4"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            {steps.map((step, index) => {
+              const Icon = step.icon;
               return (
-                <motion.div
-                  key={i}
-                  variants={fadeUp}
-                  className="gyano-card p-10 cursor-pointer"
-                >
-                  {/* ICON */}
-
-                  <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-full bg-blue-100">
-                    <Icon size={30} className="text-blue-600" />
+                <motion.div key={step.titleKey} variants={fadeUp} className="gyano-card p-6">
+                  <div className="mb-6 flex items-center justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-foreground text-background">
+                      <Icon size={22} />
+                    </div>
+                    <span className="text-sm font-bold text-muted-foreground">
+                      0{index + 1}
+                    </span>
                   </div>
-
-                  {/* TITLE */}
-
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    {item.title}
-                  </h3>
+                  <h3 className="text-lg font-semibold">{t(step.titleKey)}</h3>
+                  <p className="mt-3 text-sm leading-6 text-muted-foreground">
+                    {t(step.descKey)}
+                  </p>
                 </motion.div>
               );
             })}
@@ -371,199 +241,234 @@ function Home() {
         </div>
       </section>
 
-      {/* COURSES */}
-
-      <section className="px-10 py-28 bg-gradient-to-b from-blue-50 to-white">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-4">
-            {t("popular_courses")}
-          </h2>
-
-          <p className="text-gray-600 text-center max-w-2xl mx-auto mb-16">
-            {t("popular_courses_desc")}
-          </p>
+      <section className="gyano-section">
+        <div className="gyano-container">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <span className="gyano-kicker">Academy</span>
+              <h2 className="gyano-heading">{t("categories")}</h2>
+              <p className="mt-4 max-w-2xl text-muted-foreground">
+                {t("category_desc")}
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/login")}
+              className="gyano-secondary-button w-full md:w-auto"
+            >
+              {t("browse_courses")}
+            </button>
+          </div>
 
           <motion.div
-            className="grid md:grid-cols-3 gap-10"
+            className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.18 }}
           >
-            {courses
-              .sort((a: any, b: any) => (b.students || 0) - (a.students || 0))
-              .slice(0, 3)
-              .map((course: any) => (
-                <motion.div
-                  key={course.id}
-                  variants={fadeUp}
-                  className="gyano-card overflow-hidden"
-                >
-                  {/* COURSE IMAGE */}
-
-                  <div className="overflow-hidden">
-                    <img
-                      src={course.thumbnail}
-                      className="h-48 w-full object-cover transition duration-300 hover:scale-105"
-                    />
+            {categories.map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.div key={item.title} variants={fadeUp} className="gyano-card p-6">
+                  <div className={`mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${item.tone} text-white shadow-lg`}>
+                    <Icon size={26} />
                   </div>
-
-                  {/* COURSE CONTENT */}
-
-                  <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                      {course.title}
-                    </h3>
-
-                    <p className="text-gray-500 text-sm mb-5 line-clamp-2">
-                      {course.description}
-                    </p>
-
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => navigate("/login")}
-                        className="gyano-button bg-green-600 text-white px-4 py-2 rounded-lg w-full hover:bg-green-700 transition"
-                      >
-                        Enroll
-                      </button>
-
-                      <button
-                        onClick={() => navigate(`/course/${course.id}`)}
-                        className="gyano-button bg-blue-600 text-white px-4 py-2 rounded-lg w-full hover:bg-blue-700 transition"
-                      >
-                        View
-                      </button>
-                    </div>
-                  </div>
+                  <h3 className="text-lg font-semibold">{item.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Structured paths, practical lessons, and measurable progress.
+                  </p>
                 </motion.div>
-              ))}
+              );
+            })}
           </motion.div>
         </div>
       </section>
 
-      {/* STUDENT SUCCESS STORIES */}
-
-      <section className="py-28 px-10 bg-gradient-to-b from-blue-50 to-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            {t("success_stories")}
-          </h2>
-
-          <p className="text-gray-600 max-w-2xl mx-auto mb-16">
-            {t("sucess_stories_desc")}
-          </p>
+      <section className="gyano-section">
+        <div className="gyano-container">
+          <div className="mx-auto max-w-3xl text-center">
+            <span className="gyano-kicker">Popular Courses</span>
+            <h2 className="gyano-heading">{t("popular_courses")}</h2>
+            <p className="gyano-subtitle">{t("popular_courses_desc")}</p>
+          </div>
 
           <motion.div
-            className="grid md:grid-cols-3 gap-10"
+            className="mt-14 grid gap-6 md:grid-cols-3"
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.18 }}
           >
-            {[
-              {
-                name: "Aman",
-                story:
-                  "Gyano helped me learn programming and build my first website.",
-              },
-              {
-                name: "Priya",
-                story:
-                  "I improved my digital skills and now help others learn technology.",
-              },
-              {
-                name: "Rahul",
-                story: "This platform opened new career opportunities for me.",
-              },
-            ].map((s, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className="gyano-card p-10"
-              >
-                {/* STORY */}
-
-                <p className="text-gray-600 italic mb-6">"{s.story}"</p>
-
-                {/* USER */}
-
-                <div className="flex items-center justify-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-semibold text-blue-600">
-                    {s.name.charAt(0)}
+            {featuredCourses.map((course: any) => (
+              <motion.article key={course.id} variants={fadeUp} className="gyano-card overflow-hidden">
+                <img
+                  src={course.thumbnail}
+                  alt={course.title}
+                  loading="lazy"
+                  className="aspect-video w-full object-cover transition duration-500 hover:scale-105"
+                />
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold">{course.title}</h3>
+                  <p className="mt-2 line-clamp-2 text-sm leading-6 text-muted-foreground">
+                    {course.description}
+                  </p>
+                  <div className="mt-6 grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => navigate("/login")}
+                      className="gyano-primary-button px-4 py-2.5"
+                    >
+                      Enroll
+                    </button>
+                    <button
+                      onClick={() => navigate(`/course/${course.id}`)}
+                      className="gyano-secondary-button px-4 py-2.5"
+                    >
+                      View
+                    </button>
                   </div>
-
-                  <h4 className="font-semibold text-gray-800">{s.name}</h4>
                 </div>
-              </motion.div>
+              </motion.article>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* CTA Section */}
-
-      <section className="relative bg-white py-16 sm:py-20 lg:py-28 overflow-hidden">
-        {/* BACKGROUND DECORATION */}
-        <div className="absolute -top-32 -left-32 w-72 sm:w-96 h-72 sm:h-96 bg-blue-100 rounded-full blur-3xl opacity-40"></div>
-        <div className="absolute bottom-0 right-0 w-72 sm:w-96 h-72 sm:h-96 bg-indigo-100 rounded-full blur-3xl opacity-40"></div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* LEFT CONTENT */}
-          <div className="text-center md:text-left">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight mb-4 sm:mb-6">
-              {t("CTA")}
+      <section className="gyano-section overflow-hidden">
+        <div className="gyano-container grid gap-12 lg:grid-cols-[0.96fr_1.04fr] lg:items-center">
+          <AnimatedWrapper className="max-w-2xl">
+            <span className="gyano-kicker">Student Outcomes</span>
+            <h2 className="gyano-heading mt-3 max-w-xl tracking-tight">
+              {t("success_stories")}
             </h2>
-
-            <p className="text-gray-600 text-base sm:text-lg mb-6 sm:mb-8 max-w-xl mx-auto md:mx-0">
-              {t("CTA_desc")}
+            <p className="mt-5 max-w-xl text-lg leading-8 text-muted-foreground">
+              {t("sucess_stories_desc")}
             </p>
 
-            {/* QUOTE */}
-            <div className="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4 rounded-lg mb-6 sm:mb-8">
-              <p className="italic text-gray-600 text-sm sm:text-base">
-                {t("CTA_desc2")}
-              </p>
-            </div>
+            <motion.div
+              className="mt-10 space-y-4"
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.18 }}
+            >
+              {successStories.map((student) => {
+                const Icon = student.Icon;
 
-            {/* BUTTONS */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center md:justify-start">
-              <button
-                onClick={() => navigate("/register")}
-                className="gyano-button w-full sm:w-auto bg-blue-600 text-white px-6 sm:px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md"
-              >
-                {t("CTA_btn")}
-              </button>
+                return (
+                  <motion.article
+                    key={student.name}
+                    variants={fadeUp}
+                    whileHover={{ y: -6, scale: 1.015 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 22 }}
+                    className="group relative overflow-hidden rounded-[30px] border border-border/70 bg-white/75 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-2xl transition-all duration-300 hover:border-primary/25 hover:shadow-[0_24px_70px_rgba(15,23,42,0.14)] dark:bg-white/[0.045]"
+                  >
+                    <div className={`absolute inset-y-0 left-0 w-1 bg-gradient-to-b ${student.accent}`} />
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-primary/5 to-cyan-400/10 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    <div className="absolute -right-16 -top-16 h-32 w-32 rounded-full bg-primary/10 blur-3xl transition-transform duration-500 group-hover:scale-125" />
 
-              <button
-                onClick={() => navigate("/register")}
-                className="gyano-button w-full sm:w-auto border border-gray-300 px-6 sm:px-8 py-3 rounded-lg hover:bg-gray-100 transition"
-              >
-                {t("CTA_btn2")}
-              </button>
-            </div>
-          </div>
+                    <div className="relative flex gap-4">
+                      <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[22px] bg-gradient-to-br ${student.accent} text-white shadow-lg shadow-primary/15`}>
+                        <Icon size={25} />
+                      </div>
 
-          {/* RIGHT IMAGE */}
-          <div className="flex justify-center">
-            <div className="gyano-card p-3 sm:p-4 lg:p-6">
-              <motion.img
-                src={CTC}
-                className="rounded-xl w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg"
-                animate={{ y: [0, -20, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-              />
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-lg font-bold tracking-tight text-foreground">
+                            {student.name}
+                          </h3>
+                          <span className="rounded-full border border-emerald-500/15 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                            {student.achievement}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary/80">
+                          {student.journey}
+                        </p>
+                        <p className="mt-3 text-sm leading-7 text-muted-foreground">
+                          {student.story}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.article>
+                );
+              })}
+            </motion.div>
+          </AnimatedWrapper>
+
+          <AnimatedWrapper
+            delay={0.1}
+            className="relative overflow-hidden rounded-[36px] border border-white/10 bg-[radial-gradient(circle_at_18%_0%,rgba(14,165,233,0.28),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(168,85,247,0.24),transparent_34%),linear-gradient(135deg,#020617_0%,#0f172a_48%,#111827_100%)] p-6 text-white shadow-[0_30px_100px_rgba(2,6,23,0.35)] sm:p-8 lg:p-10"
+          >
+            <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+            <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.12),transparent_28%,rgba(255,255,255,0.08)_62%,transparent)] opacity-70" />
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-3 py-2 text-xs font-semibold text-white/70 shadow-inner shadow-white/5 backdrop-blur-xl">
+                <Sparkles size={14} />
+                Join learners worldwide
+              </div>
+
+              <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-start">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[28px] border border-white/15 bg-white/10 text-white shadow-2xl shadow-cyan-500/20 backdrop-blur-2xl">
+                  <CheckCircle2 size={30} />
+                </div>
+                <div>
+                  <h3 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+                    {t("CTA")}
+                  </h3>
+                    <p className="mt-4 max-w-xl text-base leading-8 text-white/70">
+                    {t("CTA_desc")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                {ctaStats.map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-[24px] border border-white/10 bg-white/[0.08] p-4 shadow-inner shadow-white/5 backdrop-blur-2xl"
+                  >
+                    <p className="text-2xl font-bold tracking-tight">
+                      {item.value}
+                    </p>
+                    <p className="mt-1 text-xs font-medium text-white/60">
+                      {item.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 grid gap-2 sm:grid-cols-3">
+                {trustSignals.map((signal) => (
+                  <div
+                    key={signal}
+                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-medium text-white/70 backdrop-blur-xl"
+                  >
+                    <CheckCircle2 size={14} className="text-cyan-300" />
+                    <span>{signal}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <button
+                  onClick={() => navigate("/register")}
+                  className="flex-1 rounded-2xl bg-white px-5 py-4 text-sm font-bold text-slate-950 shadow-[0_18px_45px_rgba(255,255,255,0.18)] transition duration-300 hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-cyan-50 focus:outline-none focus:ring-2 focus:ring-white/70"
+                >
+                  {t("CTA_btn")}
+                </button>
+                <button
+                  onClick={() => navigate("/register")}
+                  className="flex-1 rounded-2xl border border-white/[0.18] bg-white/[0.08] px-5 py-4 text-sm font-bold text-white shadow-inner shadow-white/5 backdrop-blur-2xl transition duration-300 hover:-translate-y-0.5 hover:scale-[1.02] hover:bg-white/[0.14] focus:outline-none focus:ring-2 focus:ring-white/40"
+                >
+                  {t("CTA_btn2")}
+                </button>
+              </div>
             </div>
-          </div>
+          </AnimatedWrapper>
         </div>
       </section>
 
-      {/* FOOTER */}
-
-      <footer className="bg-gray-900 text-gray-400 py-10 text-center">
-        <p className="text-lg font-semibold text-white mb-2">Gyano</p>
-
-        <p>Empowering Rural Education in Nabha</p>
-      </footer>
+      <Footer/>
     </motion.div>
   );
 }
